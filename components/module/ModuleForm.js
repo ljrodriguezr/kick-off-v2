@@ -1,8 +1,5 @@
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@ui/common/Grid';
+import { Card, Tabs, Typography } from 'antd';
 import PagesList from '@components/page/PagesList';
 import PagesTable from '@components/page/PagesTable';
 import MenusList from '@components/menu/MenusList';
@@ -12,33 +9,11 @@ import RolesTable from '@components/role/RolesTable';
 import InstallButton from './InstallButton';
 import MobilePicker from '@ui/common/MobilePicker';
 import { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles(() => ({
-  tabPanel: { minHeight: '90vh' },
-  tab: { padding: '1em' },
-}));
-
-const TabPanel = ({ children, value, index }) => {
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`scrollable-auto-tabpanel-${index}`}
-      aria-labelledby={`scrollable-auto-tab-${index}`}
-    >
-      {children}
-    </div>
-  );
-};
+const { Title, Text } = Typography;
 
 const ModuleForm = ({ record }) => {
-  const classes = useStyles();
-  const [tab, setTab] = useState(0);
-
-  const handleTab = (_, selected) => {
-    setTab(selected);
-  };
+  const [tab, setTab] = useState('pages');
 
   const moduleFilter = () => {
     return { Module: { id: record.id } };
@@ -49,77 +24,82 @@ const ModuleForm = ({ record }) => {
       <Grid item container style={{ marginTop: 5 }} xs={12}>
         <Grid item container justifyContent="space-between" xs={12}>
           <Grid>
-            <Typography variant="h6" gutterBottom>
+            <Title level={4} style={{ marginBottom: 0 }}>
               {record.name}
-            </Typography>
+            </Title>
           </Grid>
           <Grid>
             <InstallButton module={record} />
           </Grid>
         </Grid>
-        <Typography variant="subtitle1" gutterBottom>
-          {record.description}
-        </Typography>
+        <Text type="secondary">{record.description}</Text>
       </Grid>
       <Grid item xs={12}>
-        <Paper className={classes.tabPanel}>
+        <Card style={{ minHeight: '90vh' }}>
           <Tabs
-            value={tab}
-            indicatorColor="primary"
-            textColor="primary"
-            variant="fullWidth"
-            onChange={handleTab}
-          >
-            <Tab label="Páginas" />
-            <Tab label="Menús" />
-            <Tab label="Roles" />
-          </Tabs>
-          <TabPanel value={tab} index={0}>
-            <Grid
-              item
-              container
-              justifyContent="flex-start"
-              xs={12}
-              spacing={1}
-              className={classes.tab}
-            >
-              <MobilePicker
-                mobile={<PagesList where={moduleFilter()} />}
-                web={<PagesTable where={moduleFilter()} />}
-              />
-            </Grid>
-          </TabPanel>
-          <TabPanel value={tab} index={1}>
-            <Grid
-              item
-              container
-              justifyContent="flex-start"
-              xs={12}
-              spacing={1}
-              className={classes.tab}
-            >
-              <MobilePicker
-                mobile={<MenusList where={moduleFilter()} />}
-                web={<MenusTable where={moduleFilter()} />}
-              />
-            </Grid>
-          </TabPanel>
-          <TabPanel value={tab} index={2}>
-            <Grid
-              item
-              container
-              justifyContent="flex-start"
-              xs={12}
-              spacing={1}
-              className={classes.tab}
-            >
-              <MobilePicker
-                mobile={<RolesList where={moduleFilter()} />}
-                web={<RolesTable where={moduleFilter()} />}
-              />
-            </Grid>
-          </TabPanel>
-        </Paper>
+            activeKey={tab}
+            onChange={setTab}
+            items={[
+              {
+                key: 'pages',
+                label: 'Páginas',
+                children: (
+                  <Grid
+                    item
+                    container
+                    justifyContent="flex-start"
+                    xs={12}
+                    spacing={1}
+                    style={{ padding: '1em' }}
+                  >
+                    <MobilePicker
+                      mobile={<PagesList where={moduleFilter()} />}
+                      web={<PagesTable where={moduleFilter()} />}
+                    />
+                  </Grid>
+                ),
+              },
+              {
+                key: 'menus',
+                label: 'Menús',
+                children: (
+                  <Grid
+                    item
+                    container
+                    justifyContent="flex-start"
+                    xs={12}
+                    spacing={1}
+                    style={{ padding: '1em' }}
+                  >
+                    <MobilePicker
+                      mobile={<MenusList where={moduleFilter()} />}
+                      web={<MenusTable where={moduleFilter()} />}
+                    />
+                  </Grid>
+                ),
+              },
+              {
+                key: 'roles',
+                label: 'Roles',
+                children: (
+                  <Grid
+                    item
+                    container
+                    justifyContent="flex-start"
+                    xs={12}
+                    spacing={1}
+                    style={{ padding: '1em' }}
+                  >
+                    <MobilePicker
+                      mobile={<RolesList where={moduleFilter()} />}
+                      web={<RolesTable where={moduleFilter()} />}
+                    />
+                  </Grid>
+                ),
+              },
+            ]}
+          />
+        </Card>
       </Grid>
     </Grid>
   );

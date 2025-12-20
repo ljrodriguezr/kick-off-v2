@@ -1,39 +1,45 @@
-import { useState } from 'react';
-import {
-  esES,
-  GridToolbar,
-  DataGrid as UIDataGrid,
-  gridClasses,
-} from '@mui/x-data-grid';
+import { useMemo, useState } from 'react';
+import { Table } from 'antd';
+
+const mapColumns = (columns = []) => {
+  return columns
+    .filter((column) => !column.hide)
+    .map((column) => ({
+      key: column.field,
+      dataIndex: column.field,
+      title: column.headerName || column.field,
+      align: column.align,
+      width: column.width,
+      render: (value, record) =>
+        column.renderCell
+          ? column.renderCell({ row: record, value, id: record.id })
+          : value,
+    }));
+};
 
 const DataGrid = ({ rows, columns, loading }) => {
   const [pageSize, setPageSize] = useState(10);
-  const [editRowsModel, setEditRowsModel] = useState({}); // Inicializa editRowsModel como un objeto vacío
+  const [page, setPage] = useState(1);
+  const tableColumns = useMemo(() => mapColumns(columns), [columns]);
 
   return (
-    <div style={{ width: '100%' }}>
-      <UIDataGrid
-        rows={rows}
-        columns={columns}
-        pageSize={pageSize}
-        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-        pagination
-        autoHeight
-        editMode="cell"
-        editRowsModel={editRowsModel} // Usa el objeto editRowsModel
-        onEditRowsModelChange={(newModel) => setEditRowsModel(newModel)} // Actualiza editRowsModel
-        loading={loading}
-        rowsPerPageOptions={[10, 15, 20]}
-        localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-        components={{ Toolbar: GridToolbar }}
-        getRowHeight={() => 'auto'}
-        sx={{
-          [`& .${gridClasses.cell}`]: {
-            py: 1,
-          },
-        }}
-      />
-    </div>
+    <Table
+      rowKey="id"
+      dataSource={rows}
+      columns={tableColumns}
+      loading={loading}
+      pagination={{
+        current: page,
+        pageSize,
+        pageSizeOptions: [10, 15, 20],
+        onChange: (nextPage, nextPageSize) => {
+          setPage(nextPage);
+          if (nextPageSize) setPageSize(nextPageSize);
+        },
+        showSizeChanger: true,
+      }}
+      size="middle"
+    />
   );
 };
 

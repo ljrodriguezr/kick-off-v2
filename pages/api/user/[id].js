@@ -6,36 +6,51 @@ import access from '@middleware/access';
 import parser from '@middleware/parser';
 import UserData, { ESCAPE } from '@database/base/user';
 import PersonData from '@database/base/person';
-import LdapData from '@database/base/ldap';
-import LdapUserVarData from '@database/base/ldap/userVar';
-import LdapOuData from '@database/base/ldap/ou';
-import LdapGroupOnUsers from '@database/base/ldap/LdapGroupOnUsers';
-import ParameterData from '@database/base/parameter';
 import { pick, pickBy, isEmpty } from 'lodash';
-import {
-  getLdap,
-  parseName,
-  parseEmail,
-  parseLdapGroups,
-  parseRoles,
-  parseLdapUpdateData,
-  updateOnLdap,
-} from '@helper/api/user';
+
+const parseName = (firstName, lastName) => {
+  return [firstName, lastName].filter(Boolean).join(' ').trim();
+};
+
+const resolveEmail = (data) => {
+  if (data.email) return data.email.toLowerCase();
+  if (data.personalEmail) return data.personalEmail.toLowerCase();
+  if (data.username?.includes('@')) return data.username.toLowerCase();
+  return `${data.username?.toLowerCase() || 'user'}@local`;
+};
+
+const normalizeRoleIds = (roles) => {
+  if (!Array.isArray(roles)) return null;
+  return roles
+    .map((role) => {
+      if (typeof role === 'number') return role;
+      return role?.roleId || role?.id;
+    })
+    .filter(Boolean);
+};
+
+const parseRoles = (roles, options = {}) => {
+  if (!Array.isArray(roles)) return undefined;
+  const roleIds = normalizeRoleIds(roles);
+  const payload = {
+    create: roleIds.map((roleId) => ({ roleId, active: true })),
+  };
+  if (options.update) payload.deleteMany = {};
+  return payload;
+};
 
 /** Retorna un objeto con los datos transformados a los formatos requeridos por
  * la base de datos */
-const parseData = (data, ldap, _user) => {
+const parseData = (data, _user) => {
   data = pickBy({
     ...data,
     username: data.username?.toLowerCase(),
-    displayName: data.displayName?.toUpperCase(),
     firstName: data.firstName?.toUpperCase(),
     lastName: data.lastName?.toUpperCase(),
     personalEmail: data.personalEmail?.toLowerCase(),
     password: undefined,
-    institutionId: undefined,
   });
-  if (data.username) data.email = parseEmail(data.username, ldap.domain);
+  if (data.username) data.email = resolveEmail(data);
   if (data.firstName || data.lastName) {
     data.name = parseName(
       data.firstName || _user.Person.firstName,
@@ -59,12 +74,9 @@ const parseUser = (data) => {
     ...pick(data, [
       'modifiedDate',
       'email',
-      'ldapOUId',
       'accountTypeId',
-      'campusId',
     ]),
     username: data.email,
-    ldapGroups: parseLdapGroups(data.ldapGroups, { update: true }),
     roles: parseRoles(data.roles, { update: true }),
     modifiedDate: new Date(),
   });
@@ -94,17 +106,11 @@ handler
     request.do('read', async (api, prisma) => {
       const db = prisma.user;
       const where = { id: request.query.id };
-      if (request.user.id !== 1) where.ldapId = request.user.ldapId;
       const user = await db.where(where).getFirst();
       return api.successOne(user);
     });
   })
   .use(database(PersonData))
-  .use(database(LdapData))
-  .use(database(LdapOuData))
-  .use(database(LdapUserVarData))
-  .use(database(ParameterData))
-  .use(database(LdapGroupOnUsers))
   .use(parser.escape(ESCAPE))
   .put((request) => {
     request.do(
@@ -112,9 +118,8 @@ handler
       async (api, prisma) => {
         let data = request.body;
         const userId = request.query.id;
-        const ldap = await getLdap(prisma, request.user.Institution.ldapId);
         const _user = await prisma.user.record(userId).getUnique();
-        data = parseData(data, ldap, _user);
+        data = parseData(data, _user);
         const person = parsePerson(data);
         const user = parseUser(data);
         checkEmpty(user, person);
@@ -122,8 +127,6 @@ handler
         const modifiedPerson = await prisma.person
           .record(modifiedUser.personId)
           .update(person);
-        const ldapData = await parseLdapUpdateData(prisma, ldap, data, _user);
-        await updateOnLdap(ldap, ldapData);
         return api.success({ ...modifiedUser, Person: { ...modifiedPerson } });
       },
       { transaction: true },

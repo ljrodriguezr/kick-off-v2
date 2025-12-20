@@ -1,5 +1,5 @@
 import Dashboard from '@ui/layout/Dashboard';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@ui/common/Grid';
 import FormTitle from '@ui/common/FormTitle';
 import ActiveButton from '@ui/common/ActiveButton';
 import Loading from '@ui/common/Loading';

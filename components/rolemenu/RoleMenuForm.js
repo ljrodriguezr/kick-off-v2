@@ -1,7 +1,7 @@
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
+import Grid from '@ui/common/Grid';
+import TextField from '@ui/common/CompatTextField';
+import { Select } from 'antd';
+import Button from '@ui/common/Button';
 import Loading from '@ui/common/Loading';
 import roleMenuFormOptions from '@validations/rolemenu/roleMenuForm.schema';
 import { useState, useEffect } from 'react';
@@ -95,9 +95,9 @@ const RoleMenuForm = ({ record, menuId, roleId }) => {
             error={errors.moduleId ? true : false}
           >
             {roles.map((option) => (
-              <MenuItem key={option.id} value={option.id}>
+              <Select.Option key={option.id} value={option.id}>
                 {option.name}
-              </MenuItem>
+              </Select.Option>
             ))}
           </TextField>
         </Grid>
@@ -115,9 +115,9 @@ const RoleMenuForm = ({ record, menuId, roleId }) => {
             {...register('menuId')}
           >
             {menus.map((option) => (
-              <MenuItem key={option.id} value={option.id}>
+              <Select.Option key={option.id} value={option.id}>
                 {option.name}
-              </MenuItem>
+              </Select.Option>
             ))}
           </TextField>
         </Grid>

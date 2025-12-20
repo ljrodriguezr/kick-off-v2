@@ -1,8 +1,8 @@
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
+import Grid from '@ui/common/Grid';
+import Button from '@ui/common/Button';
 import { Controller } from 'react-hook-form';
-import { makeStyles } from '@material-ui/core/styles';
-import { Paper } from '@material-ui/core';
+import makeStyles from '@ui/common/makeStyles';
+import Paper from '@ui/common/Paper';
 import Image from 'next/image';
 
 const useStyles = makeStyles(() => ({

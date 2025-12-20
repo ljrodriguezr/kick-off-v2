@@ -1,4 +1,4 @@
-import Grid from '@material-ui/core/Grid';
+import Grid from '@ui/common/Grid';
 import Card from '@ui/common/Card';
 import { useSelector } from 'react-redux';
 import { selector } from '@redux/reducers/accessSlice';

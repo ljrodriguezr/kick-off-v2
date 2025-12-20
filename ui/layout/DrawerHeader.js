@@ -1,18 +1,25 @@
-import styled from 'styled-components';
-
-const DrawerHeader = styled.div`
-  position: fixed;
-  top: 0;
-  left: -20px;
-  z-index: 999;
-  display: flex;
-  align-items: center;
-  width: 300px;
-  height: 60px;
-  border-bottom: 1px solid #384152;
-  padding: 0 8px;
-  justify-content: flex-end;
-  background-color: #1890ff;
-`;
+const DrawerHeader = ({ children, ...props }) => {
+  return (
+    <div
+      {...props}
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 2,
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        height: 64,
+        borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+        padding: '0 12px',
+        justifyContent: 'flex-end',
+        backgroundColor: 'var(--dashboard-header, #1f3b68)',
+        ...props.style,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
 
 export default DrawerHeader;

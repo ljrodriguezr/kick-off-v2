@@ -1,11 +1,11 @@
-import Grid from '@material-ui/core/Grid';
+import Grid from '@ui/common/Grid';
 import Loading from '@ui/common/Loading';
 import Card from '@ui/common/Dashboard/Card';
 import { useSnackbar } from 'notistack';
 import { menuService } from '@services/menu.service';
 import { useState, useEffect } from 'react';
 import { page } from '@lib/page';
-import { Alert } from '@material-ui/lab';
+import { Alert } from 'antd';
 import { isEmpty } from 'lodash';
 
 const List = ({ menuCode }) => {
@@ -32,7 +32,9 @@ const List = ({ menuCode }) => {
       ))}
       {isEmpty(data) && (
         <Grid item xs={12} style={{ marginTop: 15 }}>
-          <Alert severity="info">Sin registros</Alert>
+          <Alert type="info" showIcon>
+            Sin registros
+          </Alert>
         </Grid>
       )}
     </Grid>

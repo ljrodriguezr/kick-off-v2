@@ -1,20 +1,12 @@
-import Button from '@material-ui/core/Button';
 import Spinner from '@ui/common/Spinner';
-import { makeStyles } from '@material-ui/core/styles';
+import { Button } from 'antd';
 import { useSnackbar } from 'notistack';
 import { snackbar } from '@lib/snackbar';
 import { useState } from 'react';
 import { moduleService } from '@services/module.service';
 import { useRouter } from 'next/router';
 
-const useStyles = makeStyles(() => ({
-  container: {
-    width: 100,
-  },
-}));
-
 const InstallButton = ({ module }) => {
-  const classes = useStyles();
   const router = useRouter();
   const [installed] = useState(module.installed);
   const [loading, setLoading] = useState(false);
@@ -41,12 +33,11 @@ const InstallButton = ({ module }) => {
   if (!module.id) return <></>;
 
   return (
-    <div className={classes.container}>
+    <div style={{ width: 120 }}>
       <Button
         size="small"
-        variant="contained"
-        fullWidth={true}
-        color="primary"
+        type="primary"
+        block
         onClick={onSubmit}
         disabled={loading}
       >

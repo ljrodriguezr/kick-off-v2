@@ -4,14 +4,12 @@ import database from '@middleware/database';
 import UserData from '@database/base/user';
 import schemas from '@database/base/user/schemas';
 import { userHelper } from '@helper/user';
-import InstitutionData from '@database/base/institution';
 
 const handler = nextConnect();
 
 handler
   .use(api)
   .use(database(UserData))
-  .use(database(InstitutionData))
   .post((request) => {
     request.do(
       null,

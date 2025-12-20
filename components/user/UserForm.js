@@ -1,13 +1,12 @@
-import Grid from '@material-ui/core/Grid';
+import { Row, Col, Button } from 'antd';
 import TextField from '@ui/common/TextField';
 import Select from '@ui/common/Select';
 import Title from '@ui/common/Title';
 import Paper from '@ui/common/Paper';
-import Button from '@material-ui/core/Button';
 import Loading from '@ui/common/Loading';
 import Switch from '@ui/common/Switch';
 import { useState, useEffect, useCallback } from 'react';
-import { deburr } from 'lodash';
+import { deburr, trim } from 'lodash';
 import { useSnackbar } from 'notistack';
 import { snackbar } from '@lib/snackbar';
 import { useForm, useWatch, useFormState } from 'react-hook-form';
@@ -16,12 +15,8 @@ import { userService } from '@services/user.service';
 import { useRouter } from 'next/router';
 import { form } from '@lib/form';
 import { page } from '@lib/page';
-import { ldapOuService } from '@services/ldapOu.service';
-import { parameterService } from '@services/parameter.service';
-import { ldapGroupService } from '@services/ldapGroup.service';
 import { roleService } from '@services/role.service';
 import { validateDni } from '@helper/dni';
-import { trim } from 'lodash';
 
 const defaultValues = (record) => {
   return {
@@ -29,32 +24,19 @@ const defaultValues = (record) => {
     firstName: record.Person?.firstName || '',
     lastName: record.Person?.lastName || '',
     name: record.Person?.name || '',
-    displayName: record.Person?.name || '',
-    username: record.username?.split('@')[0] || '',
-    email: record.username || '',
+    username: record.username || '',
+    email: record.email || '',
     personalEmail: record.Person?.email || '',
     mobile: record.Person?.mobile || '',
-    ldapOUId: record.ldapOUId,
-    accountTypeId: record.accountTypeId,
-    campusId: record.campusId,
-    ldapGroups:
-      record.ldapGroups
-        ?.filter((item) => item.active)
-        .map((item) => item.ldapGroupId) || [],
     roles:
       record.roles?.filter((item) => item.active).map((item) => item.roleId) ||
       [],
-    schedules:
-      record.schedules
-        ?.filter((item) => item.active)
-        .map((item) => item.scheduleId) || [],
   };
 };
 
 const UserForm = ({ record }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [institution, setInstitution] = useState({});
   const [person, setPerson] = useState(record.Person || {});
   const [personFound, setPersonFound] = useState(!!record.id);
   const [isDni, setIsDni] = useState(true);
@@ -69,7 +51,6 @@ const UserForm = ({ record }) => {
 
   const firstName = useWatch({ control, name: 'firstName', defaultValue: '' });
   const lastName = useWatch({ control, name: 'lastName', defaultValue: '' });
-  const username = useWatch({ control, name: 'username', defaultValue: '' });
   const dni = useWatch({ control, name: 'dni', defaultValue: '' });
 
   useEffect(() => {
@@ -78,17 +59,10 @@ const UserForm = ({ record }) => {
       async () => {
         setValue('checkDni', true, { shouldDirty: true });
         setLoading(true);
-        setInstitution(await userService.getInstitution());
       },
       () => setLoading(false),
     );
   }, [enqueueSnackbar, setValue]);
-
-  useEffect(() => {
-    if (!institution.id) return;
-    setName();
-    setUsername();
-  }, [person, institution, setName, setUsername]);
 
   const findPerson = (event) => {
     if (loading) return;
@@ -100,7 +74,6 @@ const UserForm = ({ record }) => {
         if (isDni && !validateDni(dni)) throw 'Cédula no válida';
         setLoading(true);
         setPersonFound(false);
-        //await userService.getPersonByDniOnLDap(dni);
         const person = await userService.getUniquePersonByDni(dni);
         setPersonFound(true);
         if (person.id) {
@@ -115,18 +88,6 @@ const UserForm = ({ record }) => {
     );
   };
 
-  const onBlurUsername = () => {
-    setEmail();
-  };
-
-  const setEmail = useCallback(
-    (_username) => {
-      const email = `${_username || username}${institution.Ldap.domain}`;
-      setValue('email', email, { shouldDirty: true });
-    },
-    [institution, setValue, username],
-  );
-
   const setUsername = useCallback(() => {
     const _firstName = firstName || person?.firstName || '';
     const _lastName = lastName || person?.lastName || '';
@@ -139,8 +100,7 @@ const UserForm = ({ record }) => {
     let username = `${first}${second}.${surname}${third}`;
     username = deburr(username).toLowerCase();
     setValue('username', username, { shouldDirty: true });
-    setEmail(username);
-  }, [firstName, lastName, person, setEmail, setValue]);
+  }, [firstName, lastName, person, setValue]);
 
   const setName = useCallback(() => {
     const first = firstName?.toUpperCase() || person?.firstName || '';
@@ -150,6 +110,11 @@ const UserForm = ({ record }) => {
     setValue('name', name);
     setValue('displayName', name, { shouldDirty: true });
   }, [firstName, lastName, person, setValue]);
+
+  useEffect(() => {
+    setName();
+    setUsername();
+  }, [person, setName, setUsername]);
 
   const onChangeName = () => {
     setName();
@@ -186,19 +151,17 @@ const UserForm = ({ record }) => {
       {loading && <Loading />}
       <form onSubmit={handleSubmit(onSubmit)}>
         <Paper>
-          <Grid item container spacing={1} xs={12}>
-            <Grid item container xs={12} sm={8} md={8} lg={10} xl={10}>
-              <Title title="Datos del Sistema" />
-            </Grid>
-            <Grid
-              item
-              container
-              xs={12}
-              sm={4}
-              md={4}
-              lg={2}
-              xl={2}
-              justifyContent="flex-end"
+          <Row gutter={[8, 8]}>
+            <Col xs={24} sm={18} md={18} lg={20} xl={20}>
+              <Title title="Datos del Usuario" />
+            </Col>
+            <Col
+              xs={24}
+              sm={6}
+              md={6}
+              lg={4}
+              xl={4}
+              style={{ display: 'flex', justifyContent: 'flex-end' }}
             >
               {!record.id && (
                 <Switch
@@ -210,10 +173,10 @@ const UserForm = ({ record }) => {
                   onChange={onChangeCheckDni}
                 />
               )}
-            </Grid>
-          </Grid>
-          <Grid container spacing={1}>
-            <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+            </Col>
+          </Row>
+          <Row gutter={[8, 8]}>
+            <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <TextField
                 control={control}
                 id="dni"
@@ -222,8 +185,8 @@ const UserForm = ({ record }) => {
                 errors={errors.dni}
                 onBlur={findPerson}
               />
-            </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+            </Col>
+            <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <TextField
                 control={control}
                 id="firstName"
@@ -232,8 +195,8 @@ const UserForm = ({ record }) => {
                 errors={errors.firstName}
                 onBlur={onChangeName}
               />
-            </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+            </Col>
+            <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <TextField
                 control={control}
                 id="lastName"
@@ -242,8 +205,8 @@ const UserForm = ({ record }) => {
                 errors={errors.lastName}
                 onBlur={onChangeName}
               />
-            </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+            </Col>
+            <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <TextField
                 control={control}
                 id="name"
@@ -252,19 +215,27 @@ const UserForm = ({ record }) => {
                 errors={errors.name}
                 shrink={true}
               />
-            </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+            </Col>
+            <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <TextField
                 control={control}
                 id="username"
                 label="Nombre de usuario"
                 disabled={loading || !!person.id || !personFound}
                 errors={errors.username}
-                onBlur={onBlurUsername}
                 shrink={true}
               />
-            </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+            </Col>
+            <Col xs={24} sm={12} md={12} lg={6} xl={6}>
+              <TextField
+                control={control}
+                id="email"
+                label="Correo electrónico"
+                disabled={loading || !personFound}
+                errors={errors.email}
+              />
+            </Col>
+            <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <TextField
                 control={control}
                 id="personalEmail"
@@ -272,8 +243,8 @@ const UserForm = ({ record }) => {
                 disabled={loading || !personFound}
                 errors={errors.personalEmail}
               />
-            </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+            </Col>
+            <Col xs={24} sm={12} md={12} lg={6} xl={6}>
               <TextField
                 control={control}
                 id="mobile"
@@ -281,18 +252,8 @@ const UserForm = ({ record }) => {
                 disabled={loading || !personFound}
                 errors={errors.mobile}
               />
-            </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-              <Select
-                control={control}
-                id="campusId"
-                label="Campus"
-                records={institution?.campus || []}
-                disabled={loading || !personFound}
-                errors={errors.campusId}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
+            </Col>
+            <Col xs={24} sm={24} md={24} lg={12} xl={12}>
               <Select
                 control={control}
                 id="roles"
@@ -303,86 +264,22 @@ const UserForm = ({ record }) => {
                 service={roleService}
                 multiple={true}
               />
-            </Grid>
-          </Grid>
+            </Col>
+          </Row>
         </Paper>
-        <Paper>
-          <Grid container spacing={1}>
-            <Grid item xs={12}>
-              <Title title={`Active Directory: ${institution.name || ''}`} />
-            </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-              <TextField
-                control={control}
-                id="displayName"
-                label="Nombre para mostrar"
-                disabled={loading || !personFound}
-                errors={errors.displayName}
-                shrink={true}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-              <TextField
-                control={control}
-                id="email"
-                label="Correo institucional"
-                disabled={true}
-                errors={errors.email}
-                shrink={true}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-              <Select
-                control={control}
-                id="ldapOUId"
-                label="Unidad Organizativa"
-                displayLabel="displayName"
-                disabled={loading || !personFound}
-                errors={errors.ldapOUId}
-                service={ldapOuService}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
-              <Select
-                control={control}
-                id="accountTypeId"
-                label="Tipo de cuenta"
-                disabled={loading || !personFound}
-                errors={errors.accountTypeId}
-                dataHandler={async () =>
-                  await parameterService.getByKey('lsta')
-                }
-              />
-            </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-              <Select
-                control={control}
-                id="ldapGroups"
-                label="Grupos"
-                disabled={loading || !personFound}
-                errors={errors.ldapGroups}
-                service={ldapGroupService}
-                multiple={true}
-              />
-            </Grid>
-          </Grid>
-        </Paper>
-        <Grid container spacing={1} justifyContent="flex-end">
-          <Grid item xs={12} sm={12} md={6} lg={3} xl={3}>
+        <Row gutter={[8, 8]} justify="end" style={{ marginTop: 16 }}>
+          <Col xs={24} sm={12} md={8} lg={6} xl={6}>
             <Button
-              type="submit"
-              size="medium"
-              fullWidth
-              variant="contained"
-              color="primary"
-              align="center"
+              type="primary"
+              htmlType="submit"
+              block
               onClick={handleSubmit(onSubmit)}
               disabled={loading || !isDirty}
             >
               Guardar
             </Button>
-          </Grid>
-        </Grid>
+          </Col>
+        </Row>
       </form>
     </>
   );

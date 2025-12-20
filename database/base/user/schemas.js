@@ -37,13 +37,6 @@ const PUBLIC = {
   id: true,
   username: true,
   active: true,
-  Institution: {
-    select: {
-      name: true,
-      logo: true,
-      isologo: true,
-    },
-  },
   Person: {
     select: {
       name: true,

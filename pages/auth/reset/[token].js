@@ -1,10 +1,9 @@
 import Layout from '@ui/layout/auth/Layout';
 import Loading from '@ui/common/Loading';
 import TextField from '@ui/common/TextField';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import { Alert, AlertTitle } from '@material-ui/lab';
-import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@ui/common/Grid';
+import Button from '@ui/common/Button';
+import { Alert } from 'antd';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -12,26 +11,6 @@ import { userService } from '@services/user.service';
 import { useSnackbar } from 'notistack';
 import { snackbar } from '@lib/snackbar';
 import { resolver } from '@validations/auth/reset.schema';
-
-const useStyles = makeStyles((theme) => ({
-  errorContainer: {
-    textAlign: 'left',
-    padding: 20,
-  },
-  fieldContainer: {
-    [theme.breakpoints.down('md')]: {
-      width: '80%',
-      maxWidth: 300,
-    },
-    [theme.breakpoints.up('md')]: {
-      width: '70%',
-      maxWidth: 300,
-    },
-  },
-  buttonContainer: {
-    paddingTop: 25,
-  },
-}));
 
 export const getServerSideProps = async (context) => {
   const token = context.query.token;
@@ -45,7 +24,6 @@ export const getServerSideProps = async (context) => {
 };
 
 const Reset = ({ user, error }) => {
-  const classes = useStyles();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -86,15 +64,12 @@ const Reset = ({ user, error }) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Layout subtitle={'Reestablecer contraseña'}>
         {error ? (
-          <Grid item className={classes.errorContainer}>
-            <Alert severity="error">
-              <AlertTitle>Error</AlertTitle>
-              {error}
-            </Alert>
+          <Grid item style={{ textAlign: 'left', padding: 20 }}>
+            <Alert type="error" message="Error" description={error} showIcon />
           </Grid>
         ) : (
           <>
-            <Grid item className={classes.fieldContainer}>
+            <Grid item style={{ width: '100%', maxWidth: 320 }}>
               <TextField
                 control={control}
                 id="name"
@@ -103,7 +78,7 @@ const Reset = ({ user, error }) => {
                 errors={errors.name}
               />
             </Grid>
-            <Grid item className={classes.fieldContainer}>
+            <Grid item style={{ width: '100%', maxWidth: 320 }}>
               <TextField
                 control={control}
                 id="username"
@@ -112,7 +87,7 @@ const Reset = ({ user, error }) => {
                 errors={errors.username}
               />
             </Grid>
-            <Grid item className={classes.fieldContainer}>
+            <Grid item style={{ width: '100%', maxWidth: 320 }}>
               <TextField
                 control={control}
                 id="password"
@@ -122,7 +97,7 @@ const Reset = ({ user, error }) => {
                 errors={errors.password}
               />
             </Grid>
-            <Grid item className={classes.fieldContainer}>
+            <Grid item style={{ width: '100%', maxWidth: 320 }}>
               <TextField
                 control={control}
                 id="confirm"
@@ -132,10 +107,7 @@ const Reset = ({ user, error }) => {
                 errors={errors.confirm}
               />
             </Grid>
-            <Grid
-              item
-              className={[classes.fieldContainer, classes.buttonContainer]}
-            >
+            <Grid item style={{ width: '100%', maxWidth: 320, paddingTop: 25 }}>
               <Button
                 type="submit"
                 size="medium"

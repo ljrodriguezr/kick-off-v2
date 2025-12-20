@@ -1,28 +1,21 @@
-import Button from '@material-ui/core/Button';
+import { Button } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
-import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
 
-const useStyles = makeStyles(() => ({
-  container: {
-    width: 150,
-  },
-}));
-
 const CreateButton = ({ url, children, fullWidth = true, selector }) => {
-  const classes = useStyles();
   const router = useRouter();
   const access = useSelector(selector);
   if (!access.create) return <></>;
 
   return (
-    <div className={classes.container}>
+    <div style={{ width: fullWidth ? 150 : 'auto' }}>
       <Button
+        type="primary"
         size="small"
-        variant="contained"
-        color="primary"
+        icon={<PlusOutlined />}
         onClick={() => router.push(url)}
-        fullWidth={fullWidth}
+        block={fullWidth}
       >
         {children || 'CREAR'}
       </Button>

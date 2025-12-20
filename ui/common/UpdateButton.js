@@ -1,26 +1,19 @@
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+import { Button } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 
-const useStyles = makeStyles(() => ({
-  container: {
-    width: 100,
-  },
-}));
-
-const CreateButton = ({ url, children, state = 'draft' }) => {
-  const classes = useStyles();
+const UpdateButton = ({ url, children, state = 'draft' }) => {
   const router = useRouter();
 
   return (
-    <div className={classes.container}>
+    <div style={{ width: 100 }}>
       <Button
+        type="primary"
         size="small"
-        variant="contained"
-        color="primary"
+        icon={<EditOutlined />}
         onClick={() => router.push(url)}
-        fullWidth={true}
-        disabled={state != 'draft' ? true : false}
+        block
+        disabled={state !== 'draft'}
       >
         {children || 'MODIFICAR'}
       </Button>
@@ -28,4 +21,4 @@ const CreateButton = ({ url, children, state = 'draft' }) => {
   );
 };
 
-export default CreateButton;
+export default UpdateButton;

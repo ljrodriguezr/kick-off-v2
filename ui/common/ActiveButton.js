@@ -1,31 +1,29 @@
-import Button from '@material-ui/core/Button';
-import Spinner from '@ui/common/Spinner';
-import DeleteIcon from '@material-ui/icons/Delete';
-import RestoreFromTrashIcon from '@material-ui/icons/RestoreFromTrash';
+import { Button } from 'antd';
+import { DeleteOutlined, UndoOutlined } from '@ant-design/icons';
 import { isMobile } from 'react-device-detect';
-import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import { snackbar } from '@lib/snackbar';
 import { useState } from 'react';
 import { useEffect } from 'react';
 
-const useStyles = makeStyles(() => ({
-  container: {
-    width: 100,
-  },
-}));
-
-const defineColor = (state) => {
+const defineButtonType = (state) => {
   return state ? 'primary' : 'default';
 };
 
 const defineLabel = (state) => {
   if (state) {
-    if (isMobile) return <DeleteIcon />;
+    if (isMobile) return null;
     return 'Activado';
   }
-  if (isMobile) return <RestoreFromTrashIcon />;
+  if (isMobile) return null;
   return 'Desactivado';
+};
+
+const defineIcon = (state) => {
+  if (state) {
+    return <DeleteOutlined />;
+  }
+  return <UndoOutlined />;
 };
 
 const ActiveButton = ({
@@ -36,11 +34,11 @@ const ActiveButton = ({
   apiHandler,
   fullWidth = true,
 }) => {
-  const classes = useStyles();
   const [state, setState] = useState();
   const [loading, setLoading] = useState(false);
-  const [color, setColor] = useState();
+  const [buttonType, setButtonType] = useState();
   const [label, setLabel] = useState();
+  const [icon, setIcon] = useState();
   const { enqueueSnackbar } = useSnackbar();
 
   const change = async () => {
@@ -67,30 +65,27 @@ const ActiveButton = ({
   }, [active]);
 
   useEffect(() => {
-    setColor(defineColor(state));
+    setButtonType(defineButtonType(state));
     setLabel(defineLabel(state));
+    setIcon(defineIcon(state));
   }, [state]);
 
   if (!rowId) return <></>;
 
-  const divStyles = () => {
-    if (!isMobile) return classes.container;
-  };
-
   return (
-    <div className={divStyles()}>
+    <div style={{ width: isMobile ? 'auto' : 100 }}>
       <Button
+        type={buttonType}
         size="small"
-        variant="contained"
-        fullWidth={fullWidth}
-        color={color}
+        block={fullWidth}
         disabled={
           loading ||
           (access && ((!access?.write && !state) || (!access?.remove && state)))
         }
         onClick={change}
+        icon={!loading ? icon : null}
+        loading={loading}
       >
-        {loading && <Spinner />}
         {label}
       </Button>
     </div>

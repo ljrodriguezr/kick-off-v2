@@ -1,35 +1,28 @@
 import React from 'react';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { useState } from 'react';
-import { default as UISwitch } from '@material-ui/core/Switch';
+import { Switch, Space, Typography } from 'antd';
 
 // eslint-disable-next-line react/display-name
 const Switch = React.forwardRef(
   ({ onChange, onBlur, id, name, label, value = false }, ref) => {
     const [state, setState] = useState(value);
 
-    const handleChange = (event) => {
-      setState(event.target.checked);
-      onChange(event);
+    const handleChange = (checked) => {
+      setState(checked);
+      if (onChange) onChange({ target: { checked } });
     };
 
     return (
-      <FormGroup ref={ref} row>
-        <FormControlLabel
-          control={
-            <UISwitch
-              id={id}
-              onBlur={onBlur}
-              checked={state}
-              onChange={handleChange}
-              name={name}
-              color="primary"
-            />
-          }
-          label={label}
+      <Space ref={ref} align="center">
+        <Switch
+          id={id}
+          onBlur={onBlur}
+          checked={state}
+          onChange={handleChange}
+          name={name}
         />
-      </FormGroup>
+        <Typography.Text>{label}</Typography.Text>
+      </Space>
     );
   },
 );

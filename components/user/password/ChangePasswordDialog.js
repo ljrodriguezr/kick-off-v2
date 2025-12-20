@@ -1,13 +1,4 @@
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Stack from '@mui/material/Stack';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { Modal, Input, Button, Space, Typography } from 'antd';
 import Loading from '@ui/common/Loading';
 import changePasswordFormOptions from '@validations/user/ChangePassword.schema';
 import { useForm } from 'react-hook-form';
@@ -16,11 +7,10 @@ import { authService } from '@services/auth.service';
 import { useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { snackbar } from '@lib/snackbar';
-import { useTheme } from '@material-ui/core/styles';
+
+const { Text } = Typography;
 
 const ChangePasswordDialog = (props) => {
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
   const {
     register,
     handleSubmit,
@@ -46,7 +36,6 @@ const ChangePasswordDialog = (props) => {
     if (!loading) {
       setLoading(true);
       try {
-        // TODO: Get user id on local storage
         const user = await authService.user();
         await userService.changePassword(user.id, data);
         snackbar.success(enqueueSnackbar, 'Contraseña modificada con éxito');
@@ -62,92 +51,113 @@ const ChangePasswordDialog = (props) => {
 
   return (
     <>
-      <Dialog
-        fullScreen={fullScreen}
+      <Modal
+        title="Cambio de Contraseña"
         open={props.open}
-        onClose={props.onClose}
-        aria-labelledby="responsive-dialog-title"
+        onCancel={props.onClose}
+        footer={[
+          <Button key="cancel" onClick={props.onClose}>
+            Cancelar
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={handleSubmit(onSubmit)}
+            loading={loading}
+          >
+            Confirmar
+          </Button>,
+        ]}
+        width={500}
       >
-        <DialogTitle id="responsive-dialog-title">
-          Cambio de Contraseña
-        </DialogTitle>
-        <DialogContent>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <DialogContentText>
-              Rellene los siguientes formularios para poder cambiar su
-              contraseña.
-            </DialogContentText>
-            <Grid container>
-              <Grid item container>
-                <TextField
-                  id="current"
-                  label="Indique su contraseña actual"
-                  variant="outlined"
-                  size="small"
-                  type="password"
-                  fullWidth
-                  margin="dense"
-                  {...register('current')}
-                  helperText={errors.current?.message}
-                  error={errors.current ? true : false}
-                />
-              </Grid>
-              <Grid item container>
-                <TextField
-                  id="password"
-                  label="Indique su nueva contraseña"
-                  variant="outlined"
-                  size="small"
-                  type="password"
-                  fullWidth
-                  margin="dense"
-                  {...register('password')}
-                  helperText={errors.password?.message}
-                  error={errors.password ? true : false}
-                />
-              </Grid>
-              <Grid item container>
-                <TextField
-                  id="confirm"
-                  label="Confirme su nueva contraseña"
-                  variant="outlined"
-                  size="small"
-                  type="password"
-                  fullWidth
-                  margin="dense"
-                  {...register('confirm')}
-                  helperText={errors.confirm?.message}
-                  error={errors.confirm ? true : false}
-                />
-              </Grid>
-            </Grid>
-          </form>
-        </DialogContent>
-        <DialogActions>
-          <Grid item xs={12}>
-            <Stack direction="row" spacing={2}>
-              <Button
-                type="submit"
-                size="medium"
-                variant="contained"
-                color="primary"
-                onClick={handleSubmit(onSubmit)}
-                fullWidth
+        <div style={{ marginBottom: 16 }}>
+          <Text type="secondary">
+            Rellene los siguientes formularios para poder cambiar su contraseña.
+          </Text>
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Space direction="vertical" style={{ width: '100%' }} size="middle">
+            <div>
+              <label
+                htmlFor="current"
+                style={{
+                  display: 'block',
+                  marginBottom: 4,
+                  fontSize: 14,
+                  fontWeight: 500,
+                }}
               >
-                Confirmar
-              </Button>
-              <Button
-                size="medium"
-                variant="contained"
-                onClick={props.onClose}
-                fullWidth
+                Contraseña actual
+              </label>
+              <Input.Password
+                id="current"
+                placeholder="Indique su contraseña actual"
+                size="middle"
+                {...register('current')}
+                status={errors.current ? 'error' : ''}
+              />
+              {errors.current?.message && (
+                <div style={{ color: '#ff4d4f', fontSize: 14, marginTop: 4 }}>
+                  {errors.current.message}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label
+                htmlFor="password"
+                style={{
+                  display: 'block',
+                  marginBottom: 4,
+                  fontSize: 14,
+                  fontWeight: 500,
+                }}
               >
-                Cancelar
-              </Button>
-            </Stack>
-          </Grid>
-        </DialogActions>
-      </Dialog>
+                Nueva contraseña
+              </label>
+              <Input.Password
+                id="password"
+                placeholder="Indique su nueva contraseña"
+                size="middle"
+                {...register('password')}
+                status={errors.password ? 'error' : ''}
+              />
+              {errors.password?.message && (
+                <div style={{ color: '#ff4d4f', fontSize: 14, marginTop: 4 }}>
+                  {errors.password.message}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label
+                htmlFor="confirm"
+                style={{
+                  display: 'block',
+                  marginBottom: 4,
+                  fontSize: 14,
+                  fontWeight: 500,
+                }}
+              >
+                Confirmar nueva contraseña
+              </label>
+              <Input.Password
+                id="confirm"
+                placeholder="Confirme su nueva contraseña"
+                size="middle"
+                {...register('confirm')}
+                status={errors.confirm ? 'error' : ''}
+              />
+              {errors.confirm?.message && (
+                <div style={{ color: '#ff4d4f', fontSize: 14, marginTop: 4 }}>
+                  {errors.confirm.message}
+                </div>
+              )}
+            </div>
+          </Space>
+        </form>
+      </Modal>
 
       {loading && <Loading />}
     </>

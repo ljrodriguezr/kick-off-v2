@@ -1,4 +1,4 @@
-import Stack from '@mui/material/Stack';
+import { Space } from 'antd';
 import ActiveChip from '@ui/common/ActiveChip';
 import DataGrid from '@ui/common/DataGrid';
 import UpdateButton from '@ui/common/UpdateButton';
@@ -53,9 +53,9 @@ const AccessTable = ({ rows, loading, roleId }) => {
       width: 130,
       renderCell: (cellValues) => {
         return (
-          <Stack direction="row" spacing={1}>
+          <Space size={8}>
             {access?.write && <UpdateButton url={url(cellValues.id)} />}
-          </Stack>
+          </Space>
         );
       },
     });

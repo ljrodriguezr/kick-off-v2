@@ -40,7 +40,6 @@ const Select = ({
   getter,
   reloadFlag = 0,
 }) => {
-  const classes = useStyles();
   const [value, setValue] = useState([]);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);

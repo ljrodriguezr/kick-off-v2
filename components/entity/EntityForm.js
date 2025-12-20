@@ -1,7 +1,7 @@
-import Grid from '@material-ui/core/Grid';
+import Grid from '@ui/common/Grid';
 import TextField from '@ui/common/TextField';
 import Select from '@ui/common/Select';
-import Button from '@material-ui/core/Button';
+import Button from '@ui/common/Button';
 import Loading from '@ui/common/Loading';
 import { resolver } from '@validations/entity.resolver';
 import { useState } from 'react';

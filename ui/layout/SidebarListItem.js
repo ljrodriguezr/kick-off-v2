@@ -8,19 +8,33 @@ import styled from 'styled-components';
 const StyledMenuItem = styled(Menu.Item)`
   font-size: 14px;
   font-weight: 500;
+  border-radius: 10px;
+  margin: 4px 0;
+  height: 42px;
+  display: flex;
+  align-items: center;
 
   &:hover {
-    border-radius: 2px;
-    background: rgba(57, 57, 251, 0.05);
-    border-right: 3px solid #1890ff;
+    background: rgba(31, 59, 104, 0.08);
+    color: #1f3b68;
 
     .anticon {
-      color: #1890ff;
+      color: #1f3b68;
     }
 
     span {
-      font-weight: 520;
-      color: #1890ff;
+      font-weight: 600;
+      color: #1f3b68;
+    }
+  }
+
+  &.ant-menu-item-selected {
+    background: rgba(31, 59, 104, 0.12);
+    color: #1f3b68;
+    font-weight: 600;
+
+    .anticon {
+      color: #1f3b68;
     }
   }
 `;
@@ -59,7 +73,9 @@ const SidebarListItem = ({ icon, text, dir, urls, handleOpen }) => {
     const antIconName = iconMap[iconName.toLowerCase()] || 'FileOutlined';
     const IconComponent = Icons[antIconName];
 
-    return IconComponent ? <IconComponent style={{ fontSize: '19px', color: '#1890ff' }} /> : null;
+    return IconComponent ? (
+      <IconComponent style={{ fontSize: '18px', color: '#1f3b68' }} />
+    ) : null;
   };
 
   return (

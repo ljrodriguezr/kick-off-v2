@@ -1,26 +1,29 @@
-import { Grid } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+import { Row, Col, Typography } from 'antd';
+
+const { Title: AntTitle } = Typography;
 
 const Title = ({ children, title }) => {
-  let sizes = { xs: 12, sm: 12, lg: 12 };
-
-  if (children) {
-    sizes.xs = 8;
-    sizes.sm = 10;
-    sizes.lg = 10;
-  }
+  const leftSpan = children ? { xs: 16, sm: 20, lg: 20 } : { xs: 24, sm: 24, lg: 24 };
+  const rightSpan = children ? { xs: 8, sm: 4, lg: 4 } : { xs: 0, sm: 0, lg: 0 };
 
   return (
-    <Grid item container direction="row" xs={12}>
-      <Grid item container xs={sizes.xs} sm={sizes.sm} lg={sizes.lg}>
-        <Typography variant="h6" component="div">
+    <Row gutter={[16, 16]} style={{ width: '100%' }}>
+      <Col xs={leftSpan.xs} sm={leftSpan.sm} lg={leftSpan.lg}>
+        <AntTitle level={4} style={{ margin: 0 }}>
           {title || 'LISTA'}
-        </Typography>
-      </Grid>
-      <Grid item container xs={4} sm={2} lg={2} justifyContent="flex-end">
-        {children}
-      </Grid>
-    </Grid>
+        </AntTitle>
+      </Col>
+      {children && (
+        <Col
+          xs={rightSpan.xs}
+          sm={rightSpan.sm}
+          lg={rightSpan.lg}
+          style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
+        >
+          {children}
+        </Col>
+      )}
+    </Row>
   );
 };
 

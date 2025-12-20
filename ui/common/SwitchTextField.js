@@ -1,6 +1,6 @@
-import TextField from '@material-ui/core/TextField';
-import Switch from '@material-ui/core/Switch';
-import Grid from '@material-ui/core/Grid';
+import TextField from '@ui/common/CompatTextField';
+import Switch from '@ui/common/Switch';
+import Grid from '@ui/common/Grid';
 import { useState } from 'react';
 import { Controller } from 'react-hook-form';
 
@@ -38,7 +38,7 @@ const SwitchTextField = ({
                   fullWidth
                   size={size}
                   margin={margin}
-                  helperText={errors}
+                  helperText={errors?.message || errors}
                   error={!!errors}
                 />
               )}

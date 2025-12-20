@@ -1,9 +1,11 @@
-import { Menu, Alert } from 'antd';
+import { Menu, Alert, Typography } from 'antd';
 import SidebarListItem from '@ui/layout/SidebarListItem';
 import { useEffect, useState } from 'react';
 import { menuService } from '@services/menu.service';
+import { useRouter } from 'next/router';
 
 const { SubMenu } = Menu;
+const { Text } = Typography;
 
 const upper = (text) => {
   return text ? text.toUpperCase() : text;
@@ -59,9 +61,25 @@ const MultiLevel = ({ item, handleOpen }) => {
   );
 };
 
+const SectionTitle = ({ title }) => (
+  <div
+    style={{
+      padding: '14px 12px 6px',
+      color: '#7b8794',
+      fontSize: 12,
+      fontWeight: 600,
+      letterSpacing: 0.6,
+      textTransform: 'uppercase',
+    }}
+  >
+    <Text style={{ color: 'inherit' }}>{title}</Text>
+  </div>
+);
+
 const SidebarList = ({ handleOpen }) => {
   const [menus, setMenus] = useState([]);
   const [error, setError] = useState(false);
+  const router = useRouter();
 
   const load = async () => {
     try {
@@ -87,11 +105,34 @@ const SidebarList = ({ handleOpen }) => {
     );
   }
 
+  const selectedKey = router.asPath;
+
   return (
-    <Menu mode="inline" defaultOpenKeys={menus.map((item) => item.id?.toString())}>
-      {menus.map((item, key) => (
-        <MenuItem key={key} item={item} handleOpen={handleOpen} />
-      ))}
+    <Menu
+      mode="inline"
+      selectedKeys={[selectedKey]}
+      defaultOpenKeys={menus.map((item) => item.id?.toString())}
+      style={{ borderRight: 0, padding: '8px 10px' }}
+    >
+      {menus.map((item, key) => {
+        if (item.header) {
+          return (
+            <Menu.ItemGroup
+              key={`group-${item.id}`}
+              title={<SectionTitle title={item.name} />}
+            >
+              {(item.children || []).map((child, idx) => (
+                <MenuItem
+                  key={`child-${item.id}-${idx}`}
+                  item={child}
+                  handleOpen={handleOpen}
+                />
+              ))}
+            </Menu.ItemGroup>
+          );
+        }
+        return <MenuItem key={key} item={item} handleOpen={handleOpen} />;
+      })}
     </Menu>
   );
 };

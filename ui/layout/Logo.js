@@ -3,8 +3,8 @@ import Image from 'next/image';
 const Logo = ({ logo }) => {
   return (
     <Image
-      src={logo || '/assets/images/UEA.png'}
-      alt="UEA IMAGES"
+      src={logo || '/assets/images/react.png'}
+      alt="Kick Off"
       width={120}
       height={50}
       objectFit="contain"

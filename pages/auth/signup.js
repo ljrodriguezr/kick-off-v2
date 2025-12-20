@@ -13,7 +13,7 @@ import AuthLayout from '@ui/layout/auth/Layout';
 
 const { Title } = Typography;
 
-export default function SignupPage() {
+const SignupPage = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [form] = Form.useForm();
@@ -159,6 +159,8 @@ export default function SignupPage() {
       </Col>
     </Row>
   );
-}
+};
 
 SignupPage.Layout = AuthLayout;
+
+export default SignupPage;

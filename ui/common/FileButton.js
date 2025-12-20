@@ -1,5 +1,5 @@
 import React from 'react';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@ui/common/CompatTextField';
 
 const FileButton = ({ label, name, onChange, errors, accept }) => {
   const handleFileChange = async (event) => {

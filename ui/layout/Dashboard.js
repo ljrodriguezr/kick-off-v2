@@ -1,5 +1,5 @@
-import { Layout, Drawer, Button, Space, Row, Col, Typography } from 'antd';
-import { MenuOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { Layout, Drawer, Button, Space, Row, Typography } from 'antd';
+import { MenuOutlined, LeftOutlined } from '@ant-design/icons';
 import UserSettingMenu from '@ui/layout/UserSettingMenu';
 import SidebarList from '@ui/layout/SidebarList';
 import AppBar from '@ui/layout/AppBar';
@@ -14,47 +14,11 @@ import { useDispatch } from 'react-redux';
 import { set } from '@redux/reducers/accessSlice';
 import { set as setRoles } from '@redux/reducers/rolesSlice';
 import { userService } from '@services/user.service';
-import styled from 'styled-components';
 
-const { Content, Sider } = Layout;
+const { Sider } = Layout;
 const { Text } = Typography;
 
-const StyledLayout = styled(Layout)`
-  min-height: 100vh;
-`;
-
-const StyledSider = styled(Sider)`
-  .ant-layout-sider-children {
-    background: #fff;
-  }
-`;
-
-const TitleContainer = styled.div`
-  color: #fff;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  font-weight: bold;
-  font-size: 12px;
-`;
-
-const HeaderMock = styled.div`
-  width: 280px;
-  min-height: 60px;
-  background-color: #fff;
-`;
-
-const ContentHeaderMock = styled.div`
-  min-height: 60px;
-`;
-
-const CloseButton = styled(Button)`
-  color: white;
-  &:hover {
-    color: #e6f7ff !important;
-  }
-`;
-
-const drawerWidth = 300;
+const drawerWidth = 260;
 
 const Dashboard = (props) => {
   const [open, setOpen] = useState(!isMobile);
@@ -96,7 +60,7 @@ const Dashboard = (props) => {
 
   const getCompanyName = () => {
     const name = user?.Institution?.name;
-    if (name) return name.toUpperCase();
+    return (name || 'Kick Off').toUpperCase();
   };
 
   const getCompanyIsologo = () => {
@@ -111,34 +75,47 @@ const Dashboard = (props) => {
         <Row justify="center">
           <Logo logo={getCompanyIsologo()} />
         </Row>
-        <Row justify="center">
-          <TitleContainer>{getCompanyName()}</TitleContainer>
+        <Row justify="center" style={{ marginTop: 6 }}>
+          <Text style={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
+            {getCompanyName()}
+          </Text>
         </Row>
-        <CloseButton
-          type="text"
-          icon={<LeftOutlined />}
-          onClick={handleDrawerClose}
-        />
+        {open && (
+          <Button
+            type="text"
+            icon={<LeftOutlined />}
+            onClick={handleDrawerClose}
+            style={{ color: 'white' }}
+          />
+        )}
       </DrawerHeader>
-      <HeaderMock />
+      <div style={{ height: 64 }} />
       <SidebarList handleOpen={handleOpen} />
     </>
   );
 
   return (
-    <StyledLayout>
+    <Layout
+      style={{
+        minHeight: '100vh',
+        background: '#f4f6fb',
+        '--dashboard-header': '#1f3b68',
+        '--dashboard-bg': '#f4f6fb',
+      }}
+    >
       <AppBar open={open}>
         <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', flexGrow: 1 }}>
-            {!open && (
-              <Button
-                type="text"
-                icon={<MenuOutlined />}
-                onClick={handleDrawerOpen}
-                style={{ color: 'white' }}
-              />
-            )}
-          </div>
+          <Space>
+            <Button
+              type="text"
+              icon={<MenuOutlined />}
+              onClick={handleDrawerOpen}
+              style={{ color: 'white' }}
+            />
+            <Text style={{ color: 'white', fontWeight: 600 }}>
+              Dashboard
+            </Text>
+          </Space>
           <UserSettingMenu user={user} />
         </Space>
       </AppBar>
@@ -154,27 +131,26 @@ const Dashboard = (props) => {
           {siderContent}
         </Drawer>
       ) : (
-        <StyledSider
+        <Sider
           width={drawerWidth}
           collapsed={!open}
-          collapsedWidth={0}
+          collapsedWidth={72}
           trigger={null}
           style={{
-            overflow: 'auto',
-            height: '100vh',
-            position: 'fixed',
-            left: 0,
+            background: '#fff',
+            borderRight: '1px solid rgba(15, 35, 64, 0.08)',
           }}
         >
           {siderContent}
-        </StyledSider>
+        </Sider>
       )}
 
-      <Main open={open}>
-        <ContentHeaderMock />
-        {props.children}
-      </Main>
-    </StyledLayout>
+      <Layout>
+        <Main open={open}>
+          {props.children}
+        </Main>
+      </Layout>
+    </Layout>
   );
 };
 

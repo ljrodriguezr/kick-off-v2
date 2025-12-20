@@ -1,10 +1,10 @@
-import { Grid } from '@material-ui/core';
+import { Row } from 'antd';
 
 const Container = ({ children }) => {
   return (
-    <Grid item container justifyContent="space-between" xs={12} spacing={1}>
+    <Row gutter={[8, 8]} justify="space-between" style={{ width: '100%' }}>
       {children}
-    </Grid>
+    </Row>
   );
 };
 

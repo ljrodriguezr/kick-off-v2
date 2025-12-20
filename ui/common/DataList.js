@@ -1,15 +1,13 @@
-import Grid from '@material-ui/core/Grid';
-import Modal from '@material-ui/core/Modal';
+import Grid from '@ui/common/Grid';
 import CardList from '@ui/common/CardList';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import Modal from '@ui/common/Modal';
+import Button from '@ui/common/Button';
 import InfiniteScroll from 'react-infinite-scroller';
-import { Autocomplete } from '@material-ui/lab';
+import { Select, Input, Typography } from 'antd';
 import { useState, useEffect, useCallback } from 'react';
 import { useSnackbar } from 'notistack';
 import { page as pageHandler } from '@lib/page';
 import { isEmpty, isEqual, size, pickBy, lowerCase } from 'lodash';
-import { makeStyles } from '@material-ui/core/styles';
 import { filterOperator } from '@lib/datagrid';
 import { OPERATORS } from '@lib/datagrid';
 import { useRouter } from 'next/router';
@@ -24,37 +22,7 @@ const SORT = [
   { code: 'desc', name: 'Descendente' },
 ];
 
-const getModalStyle = () => {
-  const top = 50;
-  const left = 50;
-
-  return {
-    top: `${top}%`,
-    left: `${left}%`,
-    transform: `translate(-${top}%, -${left}%)`,
-  };
-};
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    position: 'absolute',
-    width: '90%',
-    maxWidth: 400,
-    height: 440,
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(0, 2, 0),
-  },
-  filterButton: {
-    marginBottom: 10,
-  },
-  clearButton: {
-    marginBottom: 10,
-  },
-  applyButton: {
-    marginTop: 10,
-  },
-  filterDetail: {},
-}));
+const { Text } = Typography;
 
 const DataList = ({
   where = {},
@@ -70,12 +38,10 @@ const DataList = ({
   filterHandler,
   sortHandler,
 }) => {
-  const classes = useStyles();
   const router = useRouter();
   const historyFilter = useSelector(selectDefaultFilter);
   const dispatch = useDispatch();
   const [defaultWhere] = useState(where);
-  const [modalStyle] = useState(getModalStyle);
   const [data, setData] = useState([]);
   const [rowsLoaded, setRowsLoaded] = useState(0);
   const [filter, setFilter] = useState({
@@ -245,7 +211,6 @@ const DataList = ({
           style={{ width: 100 }}
           onClick={toggleModal}
           color="primary"
-          className={classes.filterButton}
         >
           Filtros
         </Button>
@@ -253,10 +218,9 @@ const DataList = ({
           <Button
             variant="contained"
             size="small"
-            style={{ width: 120 }}
+            style={{ width: 120, marginLeft: 8 }}
             onClick={clearFilters}
             color="default"
-            className={classes.clearButton}
           >
             LIMPIAR FILTROS
           </Button>
@@ -318,163 +282,95 @@ const DataList = ({
         onClose={onCloseModal}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
+        title="Filtros"
       >
-        <div style={modalStyle} className={classes.paper}>
-          <h3 id="simple-modal-title">FILTROS</h3>
+        <div style={{ padding: 8 }}>
+          <Text strong>Filtros</Text>
           <Grid item container xs={12}>
             <Grid item container xs={12}>
-              <Autocomplete
-                onChange={(_, value) => {
+              <Select
+                style={{ width: '100%' }}
+                placeholder="Campo"
+                value={filterModel.columnField?.code}
+                disabled={loading}
+                onChange={(value) => {
+                  const selected = searchable.find((item) => item.code === value);
                   const _operators = OPERATORS.filter((item) =>
-                    item.types.includes(value.type),
+                    item.types.includes(selected?.type),
                   );
                   setFilterModel({
                     ...filterModel,
-                    columnField: value,
-                    operator: _operators[0].code,
+                    columnField: selected,
+                    operator: _operators[0]?.code,
                   });
                   setOperators(_operators);
                 }}
-                disableClearable={true}
-                options={searchable}
-                fullWidth={true}
-                disabled={loading}
-                defaultValue={
-                  searchable.find(
-                    (item) => item.code === filterModel.columnField?.code,
-                  ) || null
-                }
-                getOptionSelected={(option, value) =>
-                  option.field === value?.field
-                }
-                getOptionLabel={(option) => option?.name || null}
-                loading={loading}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Campo"
-                    size="small"
-                    margin="dense"
-                    fullWidth={true}
-                    variant="outlined"
-                  />
-                )}
+                options={searchable.map((item) => ({
+                  value: item.code,
+                  label: item.name,
+                }))}
               />
             </Grid>
             <Grid item container xs={12}>
-              <Autocomplete
-                onChange={(_, value) => {
-                  setFilterModel({ ...filterModel, operator: value?.code });
+              <Select
+                style={{ width: '100%' }}
+                placeholder="Operador"
+                value={filterModel.operator}
+                disabled={loading}
+                onChange={(value) => {
+                  setFilterModel({ ...filterModel, operator: value });
                 }}
-                disableClearable={true}
-                options={operators}
-                fullWidth={true}
-                disabled={loading}
-                getOptionSelected={(option, value) =>
-                  option.field === value?.field
-                }
-                defaultValue={
-                  OPERATORS.find(
-                    (item) => item.code === filterModel.operator,
-                  ) || null
-                }
-                getOptionLabel={(option) => option?.name || null}
-                loading={loading}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Operador"
-                    size="small"
-                    margin="dense"
-                    fullWidth={true}
-                    variant="outlined"
-                  />
-                )}
+                options={operators.map((item) => ({
+                  value: item.code,
+                  label: item.name,
+                }))}
               />
             </Grid>
             <Grid item container xs={12}>
-              <TextField
-                id="time"
-                label="Valor"
-                variant="outlined"
-                size="small"
-                type={filterModel?.columnField?.type || 'string'}
-                margin="dense"
-                defaultValue={filterModel.value || ''}
+              <Input
+                placeholder="Valor"
+                value={filterModel.value || ''}
                 onChange={(event) => {
                   setFilterModel({
                     ...filterModel,
                     value: event.target?.value,
                   });
                 }}
-                InputLabelProps={{
-                  shrink:
-                    filterModel?.columnField?.type === 'date' ||
-                    !isEmpty(filterModel?.value),
-                }}
-                fullWidth={true}
               />
             </Grid>
           </Grid>
-          <h3 id="simple-modal-title">ORDEN</h3>
+          <div style={{ marginTop: 16 }}>
+            <Text strong>Orden</Text>
+          </div>
           <Grid item container xs={12}>
             <Grid item container xs={12}>
-              <Autocomplete
-                onChange={(_, value) => {
-                  setSortModel({ ...sortModel, field: value?.code });
-                }}
-                options={searchable}
-                disableClearable={true}
-                fullWidth={true}
+              <Select
+                style={{ width: '100%' }}
+                placeholder="Campo"
+                value={sortModel.field}
                 disabled={loading}
-                getOptionSelected={(option, value) =>
-                  option.code === value?.code
-                }
-                defaultValue={
-                  searchable.find((item) => item.code === sortModel.field) ||
-                  null
-                }
-                getOptionLabel={(option) => option?.name || ''}
-                loading={loading}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Campo"
-                    size="small"
-                    margin="dense"
-                    fullWidth={true}
-                    variant="outlined"
-                  />
-                )}
+                onChange={(value) => {
+                  setSortModel({ ...sortModel, field: value });
+                }}
+                options={searchable.map((item) => ({
+                  value: item.code,
+                  label: item.name,
+                }))}
               />
             </Grid>
             <Grid item container xs={12}>
-              <Autocomplete
-                onChange={(_, value) => {
-                  setSortModel({ ...sortModel, sort: value?.code });
-                }}
-                options={SORT}
-                disableClearable={true}
-                fullWidth={true}
+              <Select
+                style={{ width: '100%' }}
+                placeholder="Orden"
+                value={sortModel.sort}
                 disabled={loading}
-                getOptionSelected={(option, value) =>
-                  option.code === value?.code
-                }
-                defaultValue={
-                  SORT.find((item) => item.code === sortModel.sort) || null
-                }
-                getOptionLabel={(option) => option?.name || ''}
-                loading={loading}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Orden"
-                    size="small"
-                    margin="dense"
-                    fullWidth={true}
-                    variant="outlined"
-                  />
-                )}
+                onChange={(value) => {
+                  setSortModel({ ...sortModel, sort: value });
+                }}
+                options={SORT.map((item) => ({
+                  value: item.code,
+                  label: item.name,
+                }))}
               />
             </Grid>
           </Grid>
@@ -483,7 +379,7 @@ const DataList = ({
             container
             xs={12}
             spacing={1}
-            className={classes.applyButton}
+            style={{ marginTop: 12 }}
           >
             <Grid item container xs={6}>
               <Button

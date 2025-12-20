@@ -1,4 +1,4 @@
-import Stack from '@mui/material/Stack';
+import { Space } from 'antd';
 import ActiveButton from '@ui/common/ActiveButton';
 import DataGrid from '@ui/common/DataGrid';
 import { roleMenuService } from '@services/rolemenu.service';
@@ -63,13 +63,13 @@ const RoleMenuTable = ({ rows, hideRoles, hideMenus, loading }) => {
       align: 'center',
       renderCell: (cell) => {
         return (
-          <Stack direction="row" spacing={1}>
+          <Space size={8}>
             <ActiveButton
               rowId={[cell.row.Role.id, cell.row.Menu.id]}
               active={cell.row.active}
               apiHandler={changeActive}
             />
-          </Stack>
+          </Space>
         );
       },
     },

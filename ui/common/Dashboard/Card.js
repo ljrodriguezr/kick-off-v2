@@ -1,30 +1,35 @@
-import Avatar from '@material-ui/core/Avatar';
-import CardHeader from '@material-ui/core/CardHeader';
-import Icon from '@material-ui/core/Icon';
-import Typography from '@material-ui/core/Typography';
-import { Card as UICard } from '@material-ui/core';
+import { Avatar, Card as UICard, Typography } from 'antd';
+import * as Icons from '@ant-design/icons';
 import { useRouter } from 'next/router';
-import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
-  header: {
-    height: '100%',
-  },
-  icon: {
-    backgroundColor: theme.palette.primary.main,
-  },
-  indicator: {
-    maxWidth: 'auto',
-    borderLeft: '10px solid #BDCA32',
-    margin: 3,
-    minHeight: 100,
-    height: '95%',
-  },
-}));
+const { Text } = Typography;
+
+const iconMap = {
+  dashboard: 'DashboardOutlined',
+  person: 'UserOutlined',
+  settings: 'SettingOutlined',
+  home: 'HomeOutlined',
+  menu: 'MenuOutlined',
+  folder: 'FolderOutlined',
+  description: 'FileTextOutlined',
+  assignment: 'FormOutlined',
+  people: 'TeamOutlined',
+  business: 'BankOutlined',
+  list: 'UnorderedListOutlined',
+  edit: 'EditOutlined',
+  delete: 'DeleteOutlined',
+  add: 'PlusOutlined',
+};
+
+const getIcon = (iconName) => {
+  if (!iconName) return null;
+  const antIconName = iconMap[iconName.toLowerCase()] || 'FileOutlined';
+  const IconComponent = Icons[antIconName];
+  return IconComponent ? <IconComponent style={{ fontSize: 18 }} /> : null;
+};
 
 const Card = ({ menu }) => {
   const router = useRouter();
-  const classes = useStyles();
 
   const push = () => {
     if (!menu?.Page?.url) return;
@@ -33,28 +38,28 @@ const Card = ({ menu }) => {
 
   return (
     <UICard
-      className={classes.indicator}
+      style={{
+        borderLeft: '10px solid #BDCA32',
+        margin: 3,
+        minHeight: 100,
+        cursor: 'pointer',
+      }}
       onClick={() => push()}
-      style={{ cursor: 'pointer' }}
     >
-      <CardHeader
-        className={classes.header}
-        avatar={
-          <Avatar
-            variant="rounded"
-            aria-label="recipe"
-            className={classes.icon}
-          >
-            <Icon className={classes.listIcon}>{menu.icon}</Icon>
-          </Avatar>
-        }
-        title={
-          <Typography variant="subtitle2">
-            <b>{menu.name}</b>
-          </Typography>
-        }
-        subheader={menu.description}
-      />
+      <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+        <Avatar
+          shape="square"
+          style={{ backgroundColor: '#2b6cb0', color: '#fff' }}
+        >
+          {getIcon(menu.icon)}
+        </Avatar>
+        <div>
+          <Text strong>{menu.name}</Text>
+          <div style={{ color: '#6b7280', fontSize: 12 }}>
+            {menu.description}
+          </div>
+        </div>
+      </div>
     </UICard>
   );
 };

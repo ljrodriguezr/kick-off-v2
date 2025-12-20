@@ -1,5 +1,5 @@
 import Dashboard from '@ui/layout/Dashboard';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@ui/common/Grid';
 import AccessForm from '@components/access/AccessForm';
 import RoleMenuForm from '@components/rolemenu/RoleMenuForm';
 import AccessDenied from '@ui/layout/AccessDenied';

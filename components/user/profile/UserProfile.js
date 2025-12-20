@@ -1,6 +1,4 @@
-import Grid from '@material-ui/core/Grid';
-import Stack from '@mui/material/Stack';
-import Button from '@material-ui/core/Button';
+import { Row, Col, Button, Space } from 'antd';
 import Loading from '@ui/common/Loading';
 import UserProfileCard from '@components/user/profile/UserProfileCard';
 import UserProfileInfo from '@components/user/profile/UserProfileInfo';
@@ -13,28 +11,8 @@ import { userService } from '@services/user.service';
 import { useSnackbar } from 'notistack';
 import { snackbar } from '@lib/snackbar';
 import { authService } from '@services/auth.service';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles(() => ({
-  main: {
-    height: 160,
-  },
-  photo: {
-    marginTop: -9,
-    height: '100%',
-    maxHeight: 100,
-  },
-  actions: {
-    height: '100%',
-  },
-  actionPanel: {
-    width: '100%',
-    paddingTop: 10,
-  },
-}));
 
 const UserProfile = (props) => {
-  const classes = useStyles();
   const profile = props.profile;
   const [openChange, setOpenChange] = useState(false);
   const [openRecover, setOpenRecover] = useState(false);
@@ -68,61 +46,51 @@ const UserProfile = (props) => {
 
   return (
     <>
-      <Grid item container>
-        <Grid container item direction="row" xs={12} className={classes.main}>
-          <Grid
-            item
-            container
-            justifyContent="center"
-            alignItems="center"
-            xs={6}
-            className={classes.photo}
-          >
-            <UserProfileLogo person={profile.Person} />
-          </Grid>
-          <Grid
-            item
-            container
-            justifyContent="flex-end"
-            xs={6}
-            className={classes.actions}
-          >
-            <Paper>
-              <Grid container justifyContent="center">
-                <strong>Credenciales</strong>
-              </Grid>
-              <Stack
-                direction="column"
-                spacing={1}
-                className={classes.actionPanel}
-              >
-                <Button
-                  size="small"
-                  variant="contained"
-                  color="primary"
-                  onClick={handleOpenChange}
-                  fullWidth
+      <Row gutter={[16, 16]}>
+        <Col xs={24}>
+          <Row gutter={16} style={{ minHeight: 160 }}>
+            <Col
+              xs={12}
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: -9,
+                maxHeight: 100,
+              }}
+            >
+              <UserProfileLogo person={profile.Person} />
+            </Col>
+            <Col
+              xs={12}
+              style={{ display: 'flex', justifyContent: 'flex-end' }}
+            >
+              <Paper>
+                <div style={{ textAlign: 'center', marginBottom: 8 }}>
+                  <strong>Credenciales</strong>
+                </div>
+                <Space
+                  direction="vertical"
+                  style={{ width: '100%', paddingTop: 10 }}
                 >
-                  Cambiar
-                </Button>
-                <Button
-                  size="small"
-                  variant="contained"
-                  color="primary"
-                  onClick={recoverPassword}
-                  fullWidth
-                >
-                  Recuperar
-                </Button>
-              </Stack>
-            </Paper>
-          </Grid>
-        </Grid>
-        <UserProfileCard user={profile} />
-      </Grid>
-      <Grid item container>
-        <UserProfileInfo user={profile} />
-      </Grid>
+                  <Button type="primary" onClick={handleOpenChange} block>
+                    Cambiar
+                  </Button>
+                  <Button type="primary" onClick={recoverPassword} block>
+                    Recuperar
+                  </Button>
+                </Space>
+              </Paper>
+            </Col>
+          </Row>
+          <UserProfileCard user={profile} />
+        </Col>
+      </Row>
+      <Row gutter={[16, 16]}>
+        <Col xs={24}>
+          <UserProfileInfo user={profile} />
+        </Col>
+      </Row>
       <ChangePasswordDialog open={openChange} onClose={handleCloseChange} />
       <RecoverPasswordDialog open={openRecover} onClose={handleCloseRecover} />
       {loading && <Loading />}

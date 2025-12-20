@@ -1,21 +1,12 @@
-import Grid from '@material-ui/core/Grid';
-import Alert from '@material-ui/lab/Alert';
-import { makeStyles } from '@material-ui/core/styles';
+import { Row, Col, Alert } from 'antd';
 import { dates } from '@lib/dates';
 
-const useStyles = makeStyles(() => ({
-  alert: {
-    paddingTop: 5,
-  },
-}));
-
 const UserProfileInfo = ({ user }) => {
-  const classes = useStyles();
   const createdDate = dates.toString(user?.createdDate);
   const lastPasswordDate = dates.toString(user?.lastPasswordDate);
   const dueDays = dates.dueDaysUntil(user?.lastPasswordDate, 180);
 
-  const activeColor = () => (user?.active ? 'success' : 'error');
+  const activeType = () => (user?.active ? 'success' : 'error');
   const activeLabel = () => (user?.active ? 'activada' : 'desactivada');
 
   const passwordChangeSeverity = () => {
@@ -29,37 +20,44 @@ const UserProfileInfo = ({ user }) => {
   };
 
   return (
-    <Grid container>
+    <Row gutter={[16, 8]}>
       {!!user?.lastPasswordDate && showDueDays() && (
-        <Grid item xs={12} className={classes.alert}>
-          <Alert severity={passwordChangeSeverity()}>
-            Le quedan <strong>{dueDays}</strong>{' '}
-            {dueDays === 1 ? 'día' : 'días'} para cambiar su contraseña
-          </Alert>
-        </Grid>
+        <Col xs={24} style={{ paddingTop: 5 }}>
+          <Alert
+            type={passwordChangeSeverity()}
+            message={
+              <>
+                Le quedan <strong>{dueDays}</strong>{' '}
+                {dueDays === 1 ? 'día' : 'días'} para cambiar su contraseña
+              </>
+            }
+          />
+        </Col>
       )}
       {!showDueDays() && (
-        <Grid item xs={12} className={classes.alert}>
-          <Alert severity="info">Su contraseña nunca expira</Alert>
-        </Grid>
+        <Col xs={24} style={{ paddingTop: 5 }}>
+          <Alert type="info" message="Su contraseña nunca expira" />
+        </Col>
       )}
-      <Grid item xs={12} className={classes.alert}>
-        <Alert severity={activeColor()}>
-          Su cuenta se encuentra {activeLabel()}
-        </Alert>
-      </Grid>
-      <Grid item xs={12} className={classes.alert}>
-        <Alert severity="info">
-          La cuenta ha sido creada en la fecha: {createdDate}
-        </Alert>
-      </Grid>
-      <Grid item xs={12} className={classes.alert}>
-        <Alert severity="info">
-          Su última actualización de contraseña se llevó a cabo el:{' '}
-          {lastPasswordDate}
-        </Alert>
-      </Grid>
-    </Grid>
+      <Col xs={24} style={{ paddingTop: 5 }}>
+        <Alert
+          type={activeType()}
+          message={`Su cuenta se encuentra ${activeLabel()}`}
+        />
+      </Col>
+      <Col xs={24} style={{ paddingTop: 5 }}>
+        <Alert
+          type="info"
+          message={`La cuenta ha sido creada en la fecha: ${createdDate}`}
+        />
+      </Col>
+      <Col xs={24} style={{ paddingTop: 5 }}>
+        <Alert
+          type="info"
+          message={`Su última actualización de contraseña se llevó a cabo el: ${lastPasswordDate}`}
+        />
+      </Col>
+    </Row>
   );
 };
 

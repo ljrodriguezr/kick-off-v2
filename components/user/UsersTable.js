@@ -5,7 +5,7 @@ import { userService } from '@services/user.service';
 import { useSelector } from 'react-redux';
 import { selector } from '@redux/reducers/accessSlice';
 import { sortHandler, filterHandler } from '@helper/filtering/base/user';
-import Avatar from '@material-ui/core/Avatar';
+import { Avatar } from 'antd';
 
 const parseHandler = (rows) => {
   return rows.map((row) => {

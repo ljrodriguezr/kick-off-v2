@@ -18,13 +18,12 @@ handler
     request.do('read', async (api, prisma) => {
       const user = await prisma.user
         .where({
-          institutionId: request.user.institutionId,
           Person: { dni: request.query.dni },
         })
         .getFirst();
       if (user)
         return api.failure(
-          `Ya existe un usuario con el número de identificación ${request.query.dni} en la institución ${user.Institution?.name}`,
+          `Ya existe un usuario con el número de identificación ${request.query.dni}`,
         );
       return api.successOne(
         await prisma.person.where({ dni: request.query.dni }).getUnique(),

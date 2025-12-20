@@ -1,10 +1,7 @@
-import TextField from '@material-ui/core/TextField';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import isWeekend from 'date-fns/isWeekend';
 import 'dayjs/locale/es';
 import { Controller } from 'react-hook-form';
+import { DatePicker } from 'antd';
 
 const BasicDateTimePicker = ({
   label,
@@ -20,34 +17,30 @@ const BasicDateTimePicker = ({
       name={name}
       control={control}
       render={({ field }) => (
-        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
-          <DateTimePicker
-            {...field}
-            inputFormat="DD/MM/YYYY HH:mm:ss"
-            name={name}
-            label={label}
+        <div>
+          <label style={{ display: 'block', fontSize: 12, marginBottom: 4 }}>
+            {label}
+          </label>
+          <DatePicker
+            showTime
+            format="DD/MM/YYYY HH:mm:ss"
+            value={field.value || null}
             disabled={disabled}
-            value={field.value}
-            shouldDisableDate={isWeekend}
             onChange={(newValue) => {
-              refs != undefined ? refs(newValue) : null;
+              if (refs) refs(newValue);
               field.onChange(newValue);
             }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="outlined"
-                size="small"
-                margin="dense"
-                disabled={disabled}
-                fullWidth
-                helperText={errors?.message}
-                error={!!errors}
-              />
-            )}
-            readOnly={readOnly}
+            status={errors ? 'error' : undefined}
+            style={{ width: '100%' }}
+            inputReadOnly={readOnly}
+            disabledDate={isWeekend}
           />
-        </LocalizationProvider>
+          {errors?.message && (
+            <div style={{ color: '#ff4d4f', fontSize: 12, marginTop: 4 }}>
+              {errors.message}
+            </div>
+          )}
+        </div>
       )}
     />
   );

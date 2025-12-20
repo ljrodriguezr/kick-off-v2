@@ -1,8 +1,6 @@
 import Dashboard from '@ui/layout/Dashboard';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import Grid from '@ui/common/Grid';
+import { Card, Tabs } from 'antd';
 import RoleForm from '@components/role/RoleForm';
 import Title from '@ui/common/Title';
 import ActiveButton from '@ui/common/ActiveButton';
@@ -17,36 +15,16 @@ import MobilePicker from '@ui/common/MobilePicker';
 import Forbidden from '@ui/common/Forbidden';
 import { useState, useEffect } from 'react';
 import { roleService } from '@services/role.service';
-import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import { isMobile } from 'react-device-detect';
 import { page, serverProps } from '@lib/page';
 import { useSelector } from 'react-redux';
 import { selector } from '@redux/reducers/accessSlice';
 
-const useStyles = makeStyles(() => ({
-  tabPanel: { minHeight: '90vh' },
-  tab: { padding: 5 },
-}));
-
-const TabPanel = ({ children, value, index }) => {
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`scrollable-auto-tabpanel-${index}`}
-      aria-labelledby={`scrollable-auto-tab-${index}`}
-    >
-      {children}
-    </div>
-  );
-};
-
 export const getServerSideProps = (context) => serverProps(context.query.id);
 
 const Role = ({ id }) => {
-  const classes = useStyles();
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState('access');
   const access = useSelector(selector.access.role);
   const [record, setRecord] = useState({});
   const [loading, setLoading] = useState(true);
@@ -73,10 +51,6 @@ const Role = ({ id }) => {
     );
   }, [id, enqueueSnackbar]);
 
-  const handleTab = (event, selected) => {
-    setTab(selected);
-  };
-
   if (loading) return <Loading />;
   if (!access.read) return <Forbidden />;
   if (!id && !access.create) return <Forbidden />;
@@ -96,86 +70,94 @@ const Role = ({ id }) => {
       {record.id ? (
         <Grid item xs={12}>
           <Grid item xs={12}>
-            <Paper className={classes.tabPanel}>
+            <Card style={{ minHeight: '90vh' }}>
               <Tabs
-                value={tab}
-                indicatorColor="primary"
-                textColor="primary"
-                variant="fullWidth"
-                onChange={handleTab}
-              >
-                <Tab label="Accesos" />
-                <Tab label="Menus" />
-              </Tabs>
-              <TabPanel value={tab} index={0}>
-                <Grid className={classes.tab}>
-                  <Title title={' '}>
-                    <CreateButton
-                      url={`/base/config/roles/${record.id}/access/create`}
-                      selector={selector.access.access}
-                    >
-                      Agregar
-                    </CreateButton>
-                  </Title>
-                </Grid>
-                <Grid
-                  item
-                  container
-                  justifyContent="flex-start"
-                  xs={12}
-                  className={classes.tab}
-                >
-                  <MobilePicker
-                    mobile={
-                      <AccessList
-                        rows={record.access || []}
-                        loading={loading}
-                      />
-                    }
-                    web={
-                      <AccessTable
-                        rows={record.access || []}
-                        roleId={record.id}
-                        loading={false}
-                      />
-                    }
-                  />
-                </Grid>
-              </TabPanel>
-              <TabPanel value={tab} index={1}>
-                <Grid className={classes.tab}>
-                  <Title title={' '}>
-                    <CreateButton
-                      url={`/base/config/roles/${record.id}/menu/create`}
-                      selector={selector.access.rolemenu}
-                    >
-                      Agregar
-                    </CreateButton>
-                  </Title>
-                </Grid>
-                <Grid
-                  item
-                  container
-                  justifyContent="flex-start"
-                  xs={12}
-                  className={classes.tab}
-                >
-                  {isMobile ? (
-                    <RoleMenuList
-                      rows={record.menus || []}
-                      forRole={true}
-                      loading={false}
-                    />
-                  ) : (
-                    <RoleMenuTable
-                      rows={record.menus || []}
-                      hideMenus={true}
-                      loading={false}
-                    />
-                  )}
-                </Grid>
-              </TabPanel>
-            </Paper>
+                activeKey={tab}
+                onChange={setTab}
+                items={[
+                  {
+                    key: 'access',
+                    label: 'Accesos',
+                    children: (
+                      <>
+                        <Grid style={{ padding: 5 }}>
+                          <Title title={' '}>
+                            <CreateButton
+                              url={`/base/config/roles/${record.id}/access/create`}
+                              selector={selector.access.access}
+                            >
+                              Agregar
+                            </CreateButton>
+                          </Title>
+                        </Grid>
+                        <Grid
+                          item
+                          container
+                          justifyContent="flex-start"
+                          xs={12}
+                          style={{ padding: 5 }}
+                        >
+                          <MobilePicker
+                            mobile={
+                              <AccessList
+                                rows={record.access || []}
+                                loading={loading}
+                              />
+                            }
+                            web={
+                              <AccessTable
+                                rows={record.access || []}
+                                roleId={record.id}
+                                loading={false}
+                              />
+                            }
+                          />
+                        </Grid>
+                      </>
+                    ),
+                  },
+                  {
+                    key: 'menus',
+                    label: 'Menus',
+                    children: (
+                      <>
+                        <Grid style={{ padding: 5 }}>
+                          <Title title={' '}>
+                            <CreateButton
+                              url={`/base/config/roles/${record.id}/menu/create`}
+                              selector={selector.access.rolemenu}
+                            >
+                              Agregar
+                            </CreateButton>
+                          </Title>
+                        </Grid>
+                        <Grid
+                          item
+                          container
+                          justifyContent="flex-start"
+                          xs={12}
+                          style={{ padding: 5 }}
+                        >
+                          {isMobile ? (
+                            <RoleMenuList
+                              rows={record.menus || []}
+                              forRole={true}
+                              loading={false}
+                            />
+                          ) : (
+                            <RoleMenuTable
+                              rows={record.menus || []}
+                              hideMenus={true}
+                              loading={false}
+                            />
+                          )}
+                        </Grid>
+                      </>
+                    ),
+                  },
+                ]}
+              />
+            </Card>
           </Grid>
         </Grid>
       ) : (

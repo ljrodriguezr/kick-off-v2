@@ -1,5 +1,5 @@
-import Grid from '@material-ui/core/Grid';
-import Stack from '@mui/material/Stack';
+import Grid from '@ui/common/Grid';
+import { Space } from 'antd';
 import ActiveButton from '@ui/common/ActiveButton';
 import UpdateButton from '@ui/common/UpdateButton';
 
@@ -22,7 +22,7 @@ const ActionCell = ({
 
   return (
     <Grid>
-      <Stack direction="row" spacing={1}>
+      <Space size={8}>
         {canUpdate && <UpdateButton url={parseUrl()} state={state} />}
         {activate && (
           <ActiveButton
@@ -32,7 +32,7 @@ const ActionCell = ({
             access={access}
           />
         )}
-      </Stack>
+      </Space>
     </Grid>
   );
 };

@@ -1,5 +1,5 @@
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
+import Grid from '@ui/common/Grid';
+import Button from '@ui/common/Button';
 import Loading from '@ui/common/Loading';
 import Switch from '@ui/common/Switch';
 import Select from '@ui/common/Select';

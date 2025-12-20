@@ -1,26 +1,21 @@
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import { Row, Col, Typography } from 'antd';
+
+const { Text } = Typography;
 
 const UserProfileCard = ({ user }) => {
   return (
-    <Grid container direction="row" spacing={1}>
-      <Grid
-        item
-        container
-        direction="column"
-        justifyContent="center"
-        spacing={1}
-      >
-        <Grid item>
-          <Typography variant="subtitle1" component="div">
-            <b> {user?.Person?.name}</b>
-          </Typography>
-          <Typography variant="body2">
-            <strong>{user?.email}</strong>
-          </Typography>
-        </Grid>
-      </Grid>
-    </Grid>
+    <Row gutter={[8, 8]}>
+      <Col xs={24}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <Text strong style={{ fontSize: 16 }}>
+            {user?.Person?.name}
+          </Text>
+          <Text strong style={{ fontSize: 14 }}>
+            {user?.email}
+          </Text>
+        </div>
+      </Col>
+    </Row>
   );
 };
 

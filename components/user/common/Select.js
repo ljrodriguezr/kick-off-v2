@@ -1,17 +1,6 @@
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/core/Autocomplete';
+import { Select as AntSelect } from 'antd';
 import { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { Controller } from 'react-hook-form';
-
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    '& > * + *': {
-      marginTop: theme.spacing(3),
-      minWidth: 100,
-    },
-  },
-}));
 
 const Select = ({
   id,
@@ -20,43 +9,58 @@ const Select = ({
   defaultValue,
   margin = 'dense',
   errors,
-  size = 'small',
+  size = 'middle',
   disabled = false,
   control,
 }) => {
   const [value, setValue] = useState(defaultValue);
-  const classes = useStyles();
+
   return (
-    <div className={classes.formControl}>
+    <div style={{ marginTop: margin === 'dense' ? 8 : 16, minWidth: 100 }}>
+      {label && (
+        <label
+          htmlFor={id}
+          style={{
+            display: 'block',
+            marginBottom: 4,
+            fontSize: 14,
+            fontWeight: 500,
+          }}
+        >
+          {label}
+        </label>
+      )}
       <Controller
         name={id}
         control={control}
         render={({ field }) => (
-          <Autocomplete
-            id="controllable-states-demo"
+          <AntSelect
+            id={id}
             value={value}
             disabled={disabled}
-            onChange={(event, newValue) => {
-              setValue(newValue);
-              field.onChange([newValue]);
+            onChange={(newValue) => {
+              const selectedItem = data.find(
+                (item) => (item.id || item.name) === newValue,
+              );
+              setValue(selectedItem);
+              field.onChange([selectedItem]);
             }}
-            options={data}
-            getOptionSelected={(option, value) => option.name === value.name}
-            getOptionLabel={(option) => option.name || ' '}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label={label}
-                size={size}
-                margin={margin}
-                variant="outlined"
-                helperText={errors}
-                error={!!errors}
-              />
-            )}
+            options={data.map((item) => ({
+              label: item.name || ' ',
+              value: item.id || item.name,
+            }))}
+            size={size}
+            style={{ width: '100%' }}
+            status={errors ? 'error' : ''}
+            placeholder={`Seleccionar ${label || ''}`}
           />
         )}
       />
+      {errors && (
+        <div style={{ color: '#ff4d4f', fontSize: 14, marginTop: 4 }}>
+          {errors}
+        </div>
+      )}
     </div>
   );
 };

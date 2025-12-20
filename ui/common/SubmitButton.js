@@ -1,17 +1,17 @@
-import Button from '@material-ui/core/Button';
+import { Button } from 'antd';
+import { SaveOutlined } from '@ant-design/icons';
 
 const SubmitButton = ({ onClick, disabled }) => {
   return (
     <Button
       style={{ marginTop: 10 }}
-      type="submit"
-      size="medium"
-      fullWidth
-      variant="contained"
-      color="primary"
-      align="center"
+      htmlType="submit"
+      size="middle"
+      block
+      type="primary"
       onClick={onClick}
       disabled={disabled}
+      icon={<SaveOutlined />}
     >
       Guardar
     </Button>

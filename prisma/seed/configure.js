@@ -145,7 +145,7 @@ const seedModules = async () => {
   return modules;
 };
 
-// MODULES ------------------------------------------------------------
+// ENTITIES ------------------------------------------------------------
 
 const seedEntity = async ({ code, name, moduleId }) => {
   return await prisma.base_entity.upsert({
@@ -186,29 +186,9 @@ const seedEntities = async (modules) => {
     name: 'Rol-Menu',
     moduleId: modules.base.id,
   });
-  const ldap = await seedEntity({
-    code: 'ldapdomain',
-    name: 'Conexión LDAP',
-    moduleId: modules.base.id,
-  });
-  const ldapOu = await seedEntity({
-    code: 'ldapou',
-    name: 'Unidad Organizativa LDAP',
-    moduleId: modules.base.id,
-  });
-  const ldapGroup = await seedEntity({
-    code: 'ldapgroup',
-    name: 'Grupo LDAP',
-    moduleId: modules.base.id,
-  });
   const localUserVar = await seedEntity({
     code: 'localuservar',
     name: 'Variable local de Usuario',
-    moduleId: modules.base.id,
-  });
-  const ldapUserVar = await seedEntity({
-    code: 'ldapuservar',
-    name: 'Variable de usuario LDAP',
     moduleId: modules.base.id,
   });
   const _module = await seedEntity({
@@ -231,21 +211,7 @@ const seedEntities = async (modules) => {
     name: 'Parámetros',
     moduleId: modules.base.id,
   });
-  const institution = await seedEntity({
-    code: 'institution',
-    name: 'Institución',
-    moduleId: modules.base.id,
-  });
-  const campus = await seedEntity({
-    code: 'campus',
-    name: 'Campus',
-    moduleId: modules.base.id,
-  });
-  const institutionIp = await seedEntity({
-    code: 'institutionip',
-    name: 'IPs Institucionales',
-    moduleId: modules.base.id,
-  });
+
   return {
     user,
     person,
@@ -253,18 +219,11 @@ const seedEntities = async (modules) => {
     menu,
     role,
     rolemenu,
-    ldap,
-    ldapOu,
-    ldapGroup,
-    ldapUserVar,
     localUserVar,
     _module,
     entity,
     access,
     parameter,
-    institution,
-    campus,
-    institutionIp,
   };
 };
 
@@ -303,12 +262,6 @@ const seedPages = async (modules) => {
     url: '/base/users',
     moduleId: modules.base.id,
   });
-  const ldaps = await seedPage({
-    code: 'ldaps',
-    name: 'Conexiones LDAP',
-    url: '/base/config/ldap',
-    moduleId: modules.base.id,
-  });
   const _modules = await seedPage({
     code: 'modules',
     name: 'Módulos',
@@ -339,53 +292,17 @@ const seedPages = async (modules) => {
     url: '/base/config/parameter',
     moduleId: modules.base.id,
   });
-  const group = await seedPage({
-    code: 'group',
-    name: 'Grupos Ldap',
-    url: '/base/config/ldap/group',
-    moduleId: modules.base.id,
-  });
-  const ou = await seedPage({
-    code: 'ou',
-    name: 'Unidades Organizativas',
-    url: '/base/config/ldap/ou',
-    moduleId: modules.base.id,
-  });
-  const institution = await seedPage({
-    code: 'institution',
-    name: 'Institución',
-    url: '/base/config/institutions',
-    moduleId: modules.base.id,
-  });
-  const campus = await seedPage({
-    code: 'campus',
-    name: 'Campus',
-    url: '/base/config/campus',
-    moduleId: modules.base.id,
-  });
-  const institutionIp = await seedPage({
-    code: 'institutionip',
-    name: 'IPs Institucionales',
-    url: '/base/config/institutions/ip',
-    moduleId: modules.base.id,
-  });
 
   const pages = {
     home,
     config,
     entities,
     users,
-    ldaps,
     modules: _modules,
     roles,
     menus,
     pages: _pages,
     parameter,
-    group,
-    ou,
-    institution,
-    campus,
-    institutionIp,
   };
   return pages;
 };
@@ -489,17 +406,6 @@ const seedMenus = async (modules, pages) => {
     moduleId: modules.base.id,
     menuId: config.id,
   });
-  const ldaps = await seedMenu({
-    code: 'ldapdomains',
-    name: 'Conexiones LDAP',
-    description: 'Parametrización de conexiones LDAP',
-    icon: 'cable',
-    header: false,
-    priority: 10,
-    pageId: pages.ldaps.id,
-    moduleId: modules.base.id,
-    menuId: config.id,
-  });
   const roles = await seedMenu({
     code: 'roles',
     name: 'Roles',
@@ -545,61 +451,6 @@ const seedMenus = async (modules, pages) => {
     moduleId: modules.base.id,
     menuId: config.id,
   });
-  const group = await seedMenu({
-    code: 'group',
-    name: 'Grupos Ldap',
-    description: 'Parametrización de grupos LDAP',
-    icon: 'groups',
-    header: false,
-    priority: 65,
-    pageId: pages.group.id,
-    moduleId: modules.base.id,
-    menuId: config.id,
-  });
-  const ou = await seedMenu({
-    code: 'ou',
-    name: 'Unidades Organizativas',
-    description: 'Parametrización de unidades organizativas LDAP',
-    icon: 'groups',
-    header: false,
-    priority: 70,
-    pageId: pages.ou.id,
-    moduleId: modules.base.id,
-    menuId: config.id,
-  });
-  const institution = await seedMenu({
-    code: 'institution',
-    name: 'Instituciones',
-    description: 'Parametrización de instituciones',
-    icon: 'business',
-    header: false,
-    priority: 75,
-    pageId: pages.institution.id,
-    moduleId: modules.base.id,
-    menuId: config.id,
-  });
-  const institutionIp = await seedMenu({
-    code: 'institutionip',
-    name: 'IPs Institucionales',
-    description: 'Parametrización de ips institucionales',
-    icon: 'dns',
-    header: false,
-    priority: 77,
-    pageId: pages.institutionIp.id,
-    moduleId: modules.base.id,
-    menuId: config.id,
-  });
-  const campus = await seedMenu({
-    code: 'campus',
-    name: 'Campus',
-    description: 'Parametrización de campus',
-    icon: 'school',
-    header: false,
-    priority: 80,
-    pageId: pages.campus.id,
-    moduleId: modules.base.id,
-    menuId: config.id,
-  });
 
   const menus = {
     home,
@@ -607,17 +458,11 @@ const seedMenus = async (modules, pages) => {
     entities,
     users,
     baseconfig: config,
-    ldaps,
     modules: _modules,
     roles,
     menus: _menus,
     pages: _pages,
     parameter,
-    group,
-    ou,
-    institution,
-    campus,
-    institutionIp,
   };
   return menus;
 };
@@ -718,98 +563,101 @@ const seedRolesOnMenus = async (roles, menus) => {
   });
 };
 
-// USERS --------------------------------------------------------------
+// PERSON & USER --------------------------------------------------------------
 
-const seedUser = async ({ username, password, email }) => {
+const seedPerson = async ({ dni, name, firstName, lastName, email }) => {
+  return await prisma.base_person.upsert({
+    where: { dni },
+    update: {},
+    create: { dni, name, firstName, lastName, email },
+  });
+};
+
+const seedUser = async ({ username, password, email, personId }) => {
   return await prisma.base_user.upsert({
     where: { username },
     update: {},
-    create: { username, password, email },
+    create: { username, password, email, personId },
   });
 };
 
-const seedUsers = async () => {
-  await seedUser({
+const seedAdminUser = async (roles) => {
+  // Crear persona del admin
+  const adminPerson = await seedPerson({
+    dni: '0000000000',
+    name: 'ADMINISTRADOR SISTEMA',
+    firstName: 'ADMINISTRADOR',
+    lastName: 'SISTEMA',
+    email: 'admin@sistema.com',
+  });
+
+  // Crear usuario admin
+  const adminUser = await seedUser({
     username: 'admin',
-    password: parsePassword('SISMAuea2024@'),
-    email: 'admin.sgu@uea.edu.ec',
+    password: parsePassword('admin123'),
+    email: 'admin@sistema.com',
+    personId: adminPerson.id,
   });
-};
 
-// USERS - ROL --------------------------------------------------------
+  // Asignar rol de administrador
+  await prisma.base_rolesOnUsers.upsert({
+    where: {
+      roleId_userId: {
+        roleId: roles.administrator.id,
+        userId: adminUser.id,
+      },
+    },
+    update: {},
+    create: {
+      roleId: roles.administrator.id,
+      userId: adminUser.id,
+      active: true,
+    },
+  });
+
+  console.log('✅ Usuario admin creado:');
+  console.log('   Username: admin');
+  console.log('   Password: admin123');
+  console.log('   Email: admin@sistema.com');
+};
 
 // MAIN  --------------------------------------------------------------
-// PARAMETER --------------------------------------------------------------
-
-const seedParameter = async ({ code, tkey, key, name, value, active }) => {
-  return await prisma.base_parameter.upsert({
-    where: { code },
-    update: {},
-    create: { code, tkey, key, name, value, active },
-  });
-};
-
-const seedParameters = async () => {
-  await seedParameter({
-    code: 'ldap',
-    key: 'lproin',
-    name: 'ldap',
-    value: 'ldap',
-    active: true,
-  });
-  await seedParameter({
-    code: 'ldaps',
-    key: 'lprose',
-    name: 'ldaps',
-    value: 'ldaps',
-    active: true,
-  });
-  await seedParameter({
-    code: 'cu1',
-    key: 'lstaca',
-    name: 'Cuenta activada',
-    value: '512',
-    active: true,
-  });
-  await seedParameter({
-    code: 'cu2',
-    key: 'lstacd',
-    name: 'Cuenta desactivada',
-    value: '514',
-    active: true,
-  });
-  await seedParameter({
-    code: 'cu3',
-    key: 'lstacdne',
-    name: 'Cuenta desactivada. Contraseña nunca expira',
-    value: '66050',
-    active: true,
-  });
-  await seedParameter({
-    code: 'cu4',
-    key: 'lstacane',
-    name: 'Cuenta activada. Contraseña nunca expira',
-    value: '66048',
-    active: true,
-  });
-};
 
 const main = async () => {
+  console.log('🌱 Iniciando seed de la base de datos...\n');
+
   await seedLocalUserVars();
+  console.log('✅ Variables de usuario creadas');
+
   const modules = await seedModules();
+  console.log('✅ Módulos creados');
+
   const roles = await seedRoles(modules);
+  console.log('✅ Roles creados');
+
   const pages = await seedPages(modules);
+  console.log('✅ Páginas creadas');
+
   const menus = await seedMenus(modules, pages);
-  await seedUsers();
+  console.log('✅ Menús creados');
+
+  await seedAdminUser(roles);
+
   const entities = await seedEntities(modules);
+  console.log('✅ Entidades creadas');
+
   await seedRolesOnMenus(roles, menus);
-  await seedParameters();
+  console.log('✅ Relaciones rol-menú creadas');
+
   await seedAccess(entities, roles);
+  console.log('✅ Accesos creados');
+
+  console.log('\n🎉 Seed completado exitosamente!');
 };
 
 main()
   .catch((error) => {
-    console.log(error);
+    console.error('❌ Error durante el seed:', error);
     process.exit(1);
   })
   .finally(async () => {

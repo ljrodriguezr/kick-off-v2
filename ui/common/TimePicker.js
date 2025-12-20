@@ -1,9 +1,6 @@
-import TextField from '@material-ui/core/TextField';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import 'dayjs/locale/es';
 import { Controller } from 'react-hook-form';
+import { TimePicker } from 'antd';
 
 const TimePickerBasic = ({ label, name, control, errors, refs }) => {
   return (
@@ -11,30 +8,27 @@ const TimePickerBasic = ({ label, name, control, errors, refs }) => {
       name={name}
       control={control}
       render={({ field }) => (
-        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
+        <div>
+          <label style={{ display: 'block', fontSize: 12, marginBottom: 4 }}>
+            {label}
+          </label>
           <TimePicker
             {...field}
-            name={name}
-            label={label}
-            inputFormat="hh:mm a"
-            value={field.value}
+            format="HH:mm"
+            value={field.value || null}
             onChange={(newValue) => {
-              refs != undefined ? refs(newValue) : null;
+              if (refs) refs(newValue);
               field.onChange(newValue);
             }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="outlined"
-                size="small"
-                margin="dense"
-                fullWidth
-                helperText={errors?.message}
-                error={!!errors}
-              />
-            )}
+            status={errors ? 'error' : undefined}
+            style={{ width: '100%' }}
           />
-        </LocalizationProvider>
+          {errors?.message && (
+            <div style={{ color: '#ff4d4f', fontSize: 12, marginTop: 4 }}>
+              {errors.message}
+            </div>
+          )}
+        </div>
       )}
     />
   );

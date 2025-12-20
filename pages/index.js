@@ -1,4 +1,4 @@
-import Grid from '@material-ui/core/Grid';
+import { Row, Col } from 'antd';
 import UserProfile from '@components/user/profile/UserProfile';
 import Dashboard from '@ui/layout/Dashboard';
 import Loading from '@ui/common/Loading';
@@ -27,13 +27,13 @@ const Home = () => {
   if (loading) return <Loading />;
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} sm={5} md={4} lg={3} xl={2}>
+    <Row gutter={[16, 16]}>
+      <Col xs={24} sm={10} md={8} lg={6} xl={5}>
         <UserProfile profile={user} />
-      </Grid>
-      <Grid item xs={12} sm={7} md={8} lg={9} xl={10}></Grid>
-      <Grid item xs={12} sm={12} md={12} lg={12} xl={12}></Grid>
-    </Grid>
+      </Col>
+      <Col xs={24} sm={14} md={16} lg={18} xl={19}></Col>
+      <Col xs={24}></Col>
+    </Row>
   );
 };
 

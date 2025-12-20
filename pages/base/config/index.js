@@ -1,5 +1,5 @@
 import Dashboard from '@ui/layout/Dashboard';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@ui/common/Grid';
 import Container from '@ui/common/Container';
 import Title from '@ui/common/Title';
 import List from '@ui/common/Dashboard/List';

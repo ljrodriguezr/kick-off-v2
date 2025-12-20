@@ -1,5 +1,5 @@
 import Dashboard from '@ui/layout/Dashboard';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@ui/common/Grid';
 import MailAccountForm from '@components/mail/account/MailAccountForm';
 import FormTitle from '@ui/common/FormTitle';
 import ActiveButton from '@ui/common/ActiveButton';

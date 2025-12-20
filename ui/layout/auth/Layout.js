@@ -1,79 +1,96 @@
 import Image from 'next/image';
-import { Row, Col, Typography, Space } from 'antd';
+import { Row, Col, Typography } from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
 
 const { Title, Text } = Typography;
 
 const Wrap = styled.div`
-  overflow: hidden;
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Manrope:wght@400;600;700&display=swap');
+
+  --bg: #f2f6fb;
+  --card: #ffffff;
+  --ink: #0b1b2b;
+  --muted: #5b6b7c;
+  --brand: #2b6cb0;
+  --brand-dark: #245a93;
+  --accent: #5fa8ff;
+  --shadow: 0 24px 60px rgba(17, 38, 75, 0.14);
+
+  font-family: 'Manrope', 'DM Sans', sans-serif;
+  background: radial-gradient(900px 450px at 8% 12%, #d8e8ff 0%, transparent 60%),
+    radial-gradient(700px 380px at 90% 10%, #e9f1ff 0%, transparent 55%),
+    radial-gradient(600px 420px at 20% 80%, #d6e3f5 0%, transparent 50%),
+    var(--bg);
   position: relative;
   min-height: 100vh;
+  overflow: hidden;
 `;
 
 const Main = styled(Row)`
-  background-image: url(/assets/images/signin.png);
-  background-repeat: no-repeat;
-  background-size: cover;
-  min-height: calc(100vh - 20px);
+  min-height: calc(100vh - 32px);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: 56px 16px 72px;
 `;
 
 const Container = styled(Row)`
-  min-height: 500px;
   width: 100%;
+  max-width: 980px;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 32px;
+  align-items: center;
+  animation: fadeUp 600ms ease;
 
-  @media (min-width: 768px) {
-    width: 80%;
-    max-height: 500px;
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
-  @media (min-width: 992px) {
-    max-width: 800px;
-    max-height: 500px;
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
 `;
 
 const LogoContainer = styled(Col)`
-  background-color: rgba(56, 65, 82, 0.9);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  text-align: center;
-  color: #fff;
-  min-height: 170px;
-  padding: 24px;
-
-  @media (max-width: 767px) {
-    width: 100%;
-  }
-
-  @media (min-width: 768px) {
-    width: 300px;
-    height: 100%;
-  }
+  align-items: flex-start;
+  text-align: left;
+  color: var(--ink);
+  padding: 8px 12px;
+  gap: 18px;
 `;
 
 const FormContainer = styled(Col)`
-  background-color: #fff;
+  background-color: var(--card);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 24px;
+  align-items: stretch;
+  text-align: left;
+  padding: 32px;
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(43, 108, 176, 0.12);
+  max-width: 420px;
+  width: 100%;
+  justify-self: end;
 
-  @media (max-width: 767px) {
-    width: 100%;
-  }
-
-  @media (min-width: 768px) {
-    flex: 1;
-    height: 100%;
+  @media (max-width: 900px) {
+    max-width: 520px;
+    justify-self: center;
   }
 `;
 
@@ -82,37 +99,81 @@ const ChildrenContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
+  margin-top: 12px;
 `;
 
 const LinksContainer = styled(Row)`
   width: 100%;
   max-width: 300px;
-  margin-top: 25px;
+  margin-top: 20px;
 `;
 
 const StyledLink = styled.a`
-  color: #1890ff;
+  color: var(--brand);
   cursor: pointer;
+  font-weight: 600;
 
   &:hover {
-    color: #40a9ff;
+    color: var(--accent);
   }
 `;
 
 const CopyrightContainer = styled(Row)`
-  background-color: #bdca32;
+  background-color: #e4edf9;
   justify-content: center;
   align-items: center;
-  height: 20px;
-  color: #384152;
-  font-weight: bold;
+  height: 32px;
+  color: #415062;
+  font-weight: 600;
   font-size: 12px;
 `;
 
-const TitleContainer = styled.div`
-  padding: 0 5px;
-  margin-top: 16px;
+const BrandTitle = styled(Title)`
+  color: var(--ink) !important;
+  margin: 0 !important;
+  font-size: 42px !important;
+  line-height: 1.05 !important;
+  font-weight: 700 !important;
+
+  @media (max-width: 900px) {
+    font-size: 36px !important;
+  }
+`;
+
+const BrandText = styled(Text)`
+  color: var(--muted) !important;
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+`;
+
+const FormTitle = styled(Title)`
+  color: var(--ink) !important;
+  margin: 0 !important;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+`;
+
+const FormSubtitle = styled(Text)`
+  color: var(--muted) !important;
+  font-size: 14px !important;
+`;
+
+const LogoRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const LogoBadge = styled.div`
+  background: rgba(43, 108, 176, 0.14);
+  color: var(--brand-dark);
+  font-weight: 700;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
 `;
 
 const Signin = ({
@@ -124,34 +185,33 @@ const Signin = ({
   forgot = true,
 }) => {
   const currentYear = new Date().getFullYear();
+  const brandName = institution || 'Kick Off';
 
   return (
     <Wrap>
       <Main>
         <Container>
           <LogoContainer>
-            <Image
-              width={150}
-              height={150}
-              src={logo || '/assets/images/react.png'}
-              alt="uea_logo"
-            />
-            <TitleContainer>
-              <Title level={3} style={{ color: '#fff', margin: 0 }}>
-                {institution}
-              </Title>
-              <Text style={{ color: '#fff', fontSize: institution ? 14 : 20 }}>
-                Portal Transaccional
-              </Text>
-              {subtitle && (
-                <div>
-                  <Text style={{ color: '#fff', fontSize: 14 }}>{subtitle}</Text>
-                </div>
-              )}
-            </TitleContainer>
+            <LogoRow>
+              <Image
+                width={56}
+                height={56}
+                src={logo || '/assets/images/react.png'}
+                alt="kick-off-logo"
+              />
+              <LogoBadge>Reservas</LogoBadge>
+            </LogoRow>
+            <BrandTitle level={1}>{brandName}</BrandTitle>
+            <BrandText>
+              Agenda canchas de futbol sala en minutos. Administra horarios,
+              pagos y confirmaciones con una sola plataforma.
+            </BrandText>
+            {subtitle && <BrandText>{subtitle}</BrandText>}
           </LogoContainer>
 
           <FormContainer>
+            <FormTitle level={4}>Inicia sesion</FormTitle>
+            <FormSubtitle>Accede a tu cuenta para gestionar reservas.</FormSubtitle>
             <ChildrenContainer>{children}</ChildrenContainer>
 
             <LinksContainer>
@@ -179,7 +239,7 @@ const Signin = ({
         </Container>
       </Main>
       <CopyrightContainer>
-        Copyright © Universidad Estatal Amazónica {currentYear}
+        Copyright © Kick Off {currentYear}
       </CopyrightContainer>
     </Wrap>
   );

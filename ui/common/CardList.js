@@ -1,8 +1,8 @@
-import Grid from '@material-ui/core/Grid';
+import Grid from '@ui/common/Grid';
 import Card from '@ui/common/Card';
 import { isEmpty } from 'lodash';
 import PageSpinner from './PageSpinner';
-import { Alert } from '@material-ui/lab';
+import { Alert } from 'antd';
 
 const CardList = ({
   rows,
@@ -51,7 +51,9 @@ const CardList = ({
       ))}
       {isEmpty(rows) && (
         <Grid item xs={12} style={{ marginTop: 15 }}>
-          <Alert severity="info">Sin registros</Alert>
+          <Alert type="info" showIcon>
+            Sin registros
+          </Alert>
         </Grid>
       )}
       {loading && <PageSpinner />}

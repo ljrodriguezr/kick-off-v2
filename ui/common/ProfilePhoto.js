@@ -1,51 +1,14 @@
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
+import { Row, Col, Button } from 'antd';
 import Spinner from '@ui/common/Spinner';
 import { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import { snackbar } from '@lib/snackbar';
 import { personService } from '@services/person.service';
 import Image from 'next/image';
 
-const useStyles = makeStyles(() => ({
-  container: {
-    paddingTop: 9,
-  },
-  panel: {
-    marginTop: 3,
-    marginBottom: 5,
-  },
-  preview: {
-    justifyContent: 'center',
-  },
-  image: {
-    borderRadius: '50%',
-  },
-  loading: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: -130,
-  },
-  actions: {
-    justifyContent: 'center',
-    marginTop: -20,
-  },
-  paper: {
-    borderColor: 'white',
-  },
-  paperError: {
-    borderColor: 'red',
-  },
-  errorText: {
-    color: 'red',
-  },
-}));
-
 const PLACEHOLDER = `/assets/images/profile.png`;
 
 const ProfilePhoto = ({ person }) => {
-  const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const [record] = useState(person);
   const [preview, setPreview] = useState(person?.photo || PLACEHOLDER);
@@ -97,21 +60,32 @@ const ProfilePhoto = ({ person }) => {
   };
 
   return (
-    <Grid className={classes.container}>
-      <Grid container className={classes.panel}>
-        <Grid item container className={classes.preview}>
+    <div style={{ paddingTop: 9 }}>
+      <Row gutter={[8, 8]} style={{ marginTop: 3, marginBottom: 5 }}>
+        <Col xs={24} style={{ display: 'flex', justifyContent: 'center' }}>
           <Image
             src={preview}
             width={130}
             height={130}
             alt="profile"
-            className={classes.image}
+            style={{ borderRadius: '50%' }}
           />
-        </Grid>
-        <Grid item container className={classes.loading}>
+        </Col>
+        <Col
+          xs={24}
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: -130,
+          }}
+        >
           {loading && <Spinner size={50} thickness={4} />}
-        </Grid>
-        <Grid item container className={classes.actions}>
+        </Col>
+        <Col
+          xs={24}
+          style={{ display: 'flex', justifyContent: 'center', marginTop: -20 }}
+        >
           <input
             accept="image/jpeg, image/jpg"
             style={{ display: 'none' }}
@@ -122,19 +96,13 @@ const ProfilePhoto = ({ person }) => {
             }}
           />
           <label htmlFor="photo">
-            <Button
-              color="primary"
-              size="small"
-              variant="contained"
-              component="span"
-              className={classes.button}
-            >
+            <Button type="primary" size="small" component="span">
               CAMBIAR
             </Button>
           </label>
-        </Grid>
-      </Grid>
-    </Grid>
+        </Col>
+      </Row>
+    </div>
   );
 };
 

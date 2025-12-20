@@ -1,10 +1,10 @@
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
+import Grid from '@ui/common/Grid';
+import Button from '@ui/common/Button';
 import React, { useState, useMemo, useCallback } from 'react';
 import ViewerPDF from '@ui/common/ViewerPDF';
 import { Controller } from 'react-hook-form';
-import { Paper } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@ui/common/Paper';
+import makeStyles from '@ui/common/makeStyles';
 
 const useStyles = makeStyles(() => ({
   container: {

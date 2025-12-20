@@ -3,19 +3,7 @@ import { useSnackbar } from 'notistack';
 import { page as pageHandler } from '@lib/page';
 import { has, isEmpty, isEqual, pickBy } from 'lodash';
 import { filterOperator } from '@lib/datagrid';
-import {
-  esES,
-  //GridToolbar,
-  DataGrid as UIDataGrid,
-  getGridStringOperators,
-  getGridDateOperators,
-  getGridNumericColumnOperators,
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-  GridToolbarFilterButton,
-  //GridToolbarExport,
-  GridToolbarDensitySelector,
-} from '@mui/x-data-grid';
+import { Table } from 'antd';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 import { selectDefaultFilter, add } from '@redux/reducers/filterSlice';
@@ -26,33 +14,9 @@ const FILTER = {
   count: true,
 };
 
-const OPERATOR_HANDLERS = {
-  string: getGridStringOperators,
-  number: getGridNumericColumnOperators,
-  date: getGridDateOperators,
-  dateTime: getGridDateOperators,
-};
-
-const getOperators = (type) => {
-  if (!type) return getGridStringOperators();
-  const handler = OPERATOR_HANDLERS[type];
-  if (handler) return handler();
-};
-
 const parseColumns = (columns) => {
   if (!columns) return [];
-  return columns
-    .filter((item) => !(has('filter') && !item.filterable))
-    .map((item) => {
-      const operators = getOperators(item.type);
-      if (!operators) return item;
-      return {
-        ...item,
-        filterOperators: operators.filter(({ value }) => {
-          return !['isEmpty', 'isNotEmpty'].includes(value);
-        }),
-      };
-    });
+  return columns.filter((item) => !item.hide);
 };
 
 const DataGridServer = ({
@@ -74,7 +38,7 @@ const DataGridServer = ({
   const [defaultWhere] = useState(where);
   const [rowCount, setRowCount] = useState(0);
   const [pageSize, setPageSize] = useState(10);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [columnList] = useState(parseColumns(columns));
@@ -82,7 +46,7 @@ const DataGridServer = ({
     pickBy({
       ...FILTER,
       take: pageSize,
-      skip: page * pageSize,
+      skip: (page - 1) * pageSize,
       filter: defaultWhere,
       orderby: orderBy,
       ...(historyFilter?.route === router.route
@@ -132,7 +96,7 @@ const DataGridServer = ({
 
   useEffect(() => {
     if (!pageChecked && historyFilter?.route === router.route) {
-      let _page = (historyFilter?.data?.skip || 0) / pageSize;
+      let _page = (historyFilter?.data?.skip || 0) / pageSize + 1;
       if (_page === 1) _page = 1;
       setPageChecked(true);
       setPage(_page);
@@ -143,7 +107,7 @@ const DataGridServer = ({
     const params = pickBy({
       ...FILTER,
       take: pageSize,
-      skip: page * pageSize,
+      skip: (page - 1) * pageSize,
       orderby: orderBy,
       ...parseHistoryFilter(),
     });
@@ -197,37 +161,49 @@ const DataGridServer = ({
     );
   }, [enqueueSnackbar, filter, service, lastFilter, parseHandler, loading]);
 
-  const CustomToolbar = () => {
-    return (
-      <GridToolbarContainer>
-        <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
-        <GridToolbarDensitySelector />
-      </GridToolbarContainer>
-    );
-  };
+  const tableColumns = columnList.map((column) => ({
+    key: column.field,
+    dataIndex: column.field,
+    title: column.headerName || column.field,
+    align: column.align,
+    width: column.width,
+    sorter: !!column.sortable,
+    render: (value, record) =>
+      column.renderCell
+        ? column.renderCell({ row: record, value, id: record.id })
+        : value,
+  }));
 
   return (
-    <UIDataGrid
-      rows={data}
-      columns={columnList}
-      pageSize={pageSize}
-      onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-      pagination
-      autoHeight
-      sortModel={sortModel}
-      sortingMode="server"
-      onSortModelChange={(model) => setSortModel(model)}
-      paginationMode="server"
-      rowCount={rowCount}
-      filterMode="server"
-      onFilterModelChange={(model) => setFilterModel(model)}
+    <Table
+      rowKey="id"
+      dataSource={data}
+      columns={tableColumns}
       loading={loading}
-      page={page}
-      rowsPerPageOptions={[10, 15, 20]}
-      localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-      onPageChange={(newPage) => setPage(newPage)}
-      components={{ Toolbar: CustomToolbar }}
+      pagination={{
+        current: page,
+        pageSize,
+        total: rowCount,
+        showSizeChanger: true,
+        pageSizeOptions: [10, 15, 20],
+        onChange: (nextPage, nextPageSize) => {
+          setPage(nextPage);
+          if (nextPageSize) setPageSize(nextPageSize);
+        },
+      }}
+      onChange={(pagination, _filters, sorter) => {
+        if (sorter?.field && sorter?.order) {
+          setSortModel([
+            {
+              field: sorter.field,
+              sort: sorter.order === 'ascend' ? 'asc' : 'desc',
+            },
+          ]);
+        } else {
+          setSortModel([]);
+        }
+      }}
+      size="middle"
     />
   );
 };

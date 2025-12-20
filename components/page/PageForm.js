@@ -1,9 +1,9 @@
-import Grid from '@material-ui/core/Grid';
+import Grid from '@ui/common/Grid';
 import TextField from '@ui/common/TextField';
 import Select from '@ui/common/Select';
-import Button from '@material-ui/core/Button';
+import Button from '@ui/common/Button';
 import Loading from '@ui/common/Loading';
-import Alert from '@material-ui/lab/Alert';
+import { Alert } from 'antd';
 import { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useForm } from 'react-hook-form';
@@ -74,7 +74,7 @@ const PageForm = ({ record }) => {
         </Grid>
         <Grid container item xs={12} justifyContent="flex-end">
           <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
-            <Alert severity="info">
+            <Alert type="info" showIcon>
               Recuerde que la página debe existir en la ruta especificada dentro
               del directorio /pages según la documentación de Next.js
             </Alert>

@@ -1,4 +1,4 @@
-import Grid from '@material-ui/core/Grid';
+import Grid from '@ui/common/Grid';
 import Loading from '@ui/common/Loading';
 import Card from '@ui/common/Card';
 import ActiveButton from '@ui/common/ActiveButton';

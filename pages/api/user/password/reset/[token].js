@@ -2,10 +2,7 @@ import nextConnect from 'next-connect';
 import api from '@middleware/api';
 import database from '@middleware/database';
 import UserData from '@database/base/user';
-import LdapData from '@database/base/ldap';
-import schemas from '@database/base/ldap/schemas';
 import { hash } from '@lib/hash';
-import { ldap } from '@lib/ldap';
 import { checkExpiration } from '@lib/tokens';
 
 const handler = nextConnect();
@@ -27,7 +24,6 @@ const getUser = async (db, recoverToken) => {
 handler
   .use(api)
   .use(database(UserData))
-  .use(database(LdapData))
   .put((request) => {
     request.do(
       null,
@@ -36,30 +32,6 @@ handler
         const user = await getUser(prisma.user, getRecoverToken(request));
         prisma.user.setAudited(user);
         checkExpiration(user.recoverDate);
-        // Update LDAP user password if not superuser
-        if (user.id !== 1) {
-          const params = await ldap.signinConfig(
-            user.username,
-            data.password,
-            user.Institution.ldapId,
-          );
-          let ldapRecord = await prisma.ldap
-            .select(schemas.SEARCHABLE_PASSWORD)
-            .record(user.Institution.ldapId)
-            .getUnique();
-          const client = await ldap.checkBind(
-            params.url,
-            ldapRecord.username,
-            ldapRecord.password,
-          );
-          await ldap.changePassword(
-            client,
-            params.baseDN,
-            user.username,
-            data.password,
-            params.variables.email,
-          );
-        }
         // Update local user
         await prisma.user
           .clean()
