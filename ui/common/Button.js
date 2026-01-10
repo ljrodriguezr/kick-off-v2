@@ -3,7 +3,8 @@ import { Button as AntButton, Space } from 'antd';
 const mapType = (variant, color) => {
   if (variant === 'text') return 'text';
   if (variant === 'outlined') return 'default';
-  if (variant === 'contained') return color === 'primary' ? 'primary' : 'default';
+  if (variant === 'contained')
+    return color === 'primary' ? 'primary' : 'default';
   return color === 'primary' ? 'primary' : 'default';
 };
 
@@ -27,7 +28,13 @@ const Button = ({
   const antSize = mapSize(size);
 
   return (
-    <AntButton type={type} ghost={ghost} block={fullWidth} size={antSize} {...rest}>
+    <AntButton
+      type={type}
+      ghost={ghost}
+      block={fullWidth}
+      size={antSize}
+      {...rest}
+    >
       {startIcon || endIcon ? (
         <Space size={6}>
           {startIcon}

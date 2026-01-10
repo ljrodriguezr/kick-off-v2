@@ -1,5 +1,5 @@
-import { Layout, Drawer, Button, Space, Row, Typography } from 'antd';
-import { MenuOutlined, LeftOutlined } from '@ant-design/icons';
+import { Layout, Drawer, Button, Space, Typography } from 'antd';
+import { MenuOutlined } from '@ant-design/icons';
 import UserSettingMenu from '@ui/layout/UserSettingMenu';
 import SidebarList from '@ui/layout/SidebarList';
 import AppBar from '@ui/layout/AppBar';
@@ -50,8 +50,8 @@ const Dashboard = (props) => {
     isMobile ? setOpen(!open) : null;
   };
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
+  const handleDrawerToggle = () => {
+    setOpen(!open);
   };
 
   const handleDrawerClose = () => {
@@ -72,25 +72,23 @@ const Dashboard = (props) => {
   const siderContent = (
     <>
       <DrawerHeader>
-        <Row justify="center">
-          <Logo logo={getCompanyIsologo()} />
-        </Row>
-        <Row justify="center" style={{ marginTop: 6 }}>
-          <Text style={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
+        <Logo logo={getCompanyIsologo()} collapsed={!open} />
+        {open && (
+          <Text
+            style={{
+              color: 'rgba(0, 0, 0, 0.85)',
+              fontWeight: 600,
+              fontSize: 16,
+              textAlign: 'center',
+              padding: '0 16px 16px',
+              lineHeight: 1.5,
+            }}
+          >
             {getCompanyName()}
           </Text>
-        </Row>
-        {open && (
-          <Button
-            type="text"
-            icon={<LeftOutlined />}
-            onClick={handleDrawerClose}
-            style={{ color: 'white' }}
-          />
         )}
       </DrawerHeader>
-      <div style={{ height: 64 }} />
-      <SidebarList handleOpen={handleOpen} />
+      <SidebarList handleOpen={handleOpen} collapsed={!open} />
     </>
   );
 
@@ -98,22 +96,45 @@ const Dashboard = (props) => {
     <Layout
       style={{
         minHeight: '100vh',
-        background: '#f4f6fb',
-        '--dashboard-header': '#1f3b68',
-        '--dashboard-bg': '#f4f6fb',
+        background: '#f8fafc',
+        '--dashboard-header':
+          'linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)',
+        '--dashboard-bg': '#f8fafc',
+        '--sidebar-bg': '#ffffff',
       }}
     >
       <AppBar open={open}>
-        <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-          <Space>
+        <Space
+          style={{
+            width: '100%',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Space align="center" size={16}>
             <Button
               type="text"
-              icon={<MenuOutlined />}
-              onClick={handleDrawerOpen}
-              style={{ color: 'white' }}
+              icon={<MenuOutlined style={{ fontSize: 18 }} />}
+              onClick={handleDrawerToggle}
+              style={{
+                color: 'white',
+                height: 40,
+                width: 40,
+                borderRadius: 10,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.3s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+              }}
             />
-            <Text style={{ color: 'white', fontWeight: 600 }}>
-              Dashboard
+            <Text style={{ color: 'white', fontWeight: 600, fontSize: 16 }}>
+              Sistema de Gestión - Kick Off
             </Text>
           </Space>
           <UserSettingMenu user={user} />
@@ -126,7 +147,16 @@ const Dashboard = (props) => {
           onClose={handleDrawerClose}
           open={open}
           width={drawerWidth}
-          bodyStyle={{ padding: 0 }}
+          styles={{
+            header: {
+              background: 'linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+            },
+            body: {
+              padding: 0,
+              background: '#ffffff',
+            },
+          }}
         >
           {siderContent}
         </Drawer>
@@ -137,18 +167,33 @@ const Dashboard = (props) => {
           collapsedWidth={72}
           trigger={null}
           style={{
-            background: '#fff',
-            borderRight: '1px solid rgba(15, 35, 64, 0.08)',
+            background: '#ffffff',
+            boxShadow: '2px 0 16px rgba(0, 0, 0, 0.06)',
+            borderRight: '1px solid #f1f5f9',
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            bottom: 0,
+            overflow: 'hidden',
+            zIndex: 1000,
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           }}
         >
-          {siderContent}
+          <div
+            style={{
+              height: '100%',
+              overflow: 'auto',
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#cbd5e1 transparent',
+            }}
+          >
+            {siderContent}
+          </div>
         </Sider>
       )}
 
       <Layout>
-        <Main open={open}>
-          {props.children}
-        </Main>
+        <Main open={open}>{props.children}</Main>
       </Layout>
     </Layout>
   );

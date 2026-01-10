@@ -1,9 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSnackbar } from 'notistack';
 import { page as pageHandler } from '@lib/page';
 import { has, isEmpty, isEqual, pickBy } from 'lodash';
 import { filterOperator } from '@lib/datagrid';
-import { Table } from 'antd';
+import { Table, Input, Button, Space } from 'antd';
+import {
+  SearchOutlined,
+  FilterOutlined,
+  CloseCircleOutlined,
+} from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 import { selectDefaultFilter, add } from '@redux/reducers/filterSlice';
@@ -42,6 +47,10 @@ const DataGridServer = ({
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [columnList] = useState(parseColumns(columns));
+  const [searchFilters, setSearchFilters] = useState(
+    historyFilter?.searchFilters || {},
+  );
+  const searchInput = useRef(null);
   const [filter, setFilter] = useState(
     pickBy({
       ...FILTER,
@@ -100,7 +109,7 @@ const DataGridServer = ({
       if (_page === 1) _page = 1;
       setPageChecked(true);
       setPage(_page);
-      return;
+      return undefined;
     }
     const sort = sortBy();
     const filters = filterBy();
@@ -145,7 +154,7 @@ const DataGridServer = ({
   ]);
 
   useEffect(() => {
-    if (loading || isEqual(filter, lastFilter)) return;
+    if (loading || isEqual(filter, lastFilter)) return undefined;
     setLoading(true);
     pageHandler.loader(
       enqueueSnackbar,
@@ -161,6 +170,117 @@ const DataGridServer = ({
     );
   }, [enqueueSnackbar, filter, service, lastFilter, parseHandler, loading]);
 
+  // Función para manejar la búsqueda/filtrado
+  const handleSearch = (field, value, confirm) => {
+    confirm && confirm();
+    setSearchFilters((prev) => ({ ...prev, [field]: value }));
+
+    // Construir el filtro de búsqueda
+    const searchFilter = filterHandler
+      ? filterHandler(field, value, { code: 'contains' })
+      : { [field]: { contains: value, mode: 'insensitive' } };
+
+    setFilterModel((prev) => ({
+      ...prev,
+      items: [
+        ...(prev.items || []).filter((item) => item.columnField !== field),
+        { columnField: field, operatorValue: 'contains', value },
+      ],
+    }));
+    setPage(1);
+  };
+
+  // Función para limpiar filtro
+  const handleReset = (field, clearFilters) => {
+    clearFilters && clearFilters();
+    setSearchFilters((prev) => {
+      const newFilters = { ...prev };
+      delete newFilters[field];
+      return newFilters;
+    });
+    setFilterModel((prev) => ({
+      ...prev,
+      items: (prev.items || []).filter((item) => item.columnField !== field),
+    }));
+    setPage(1);
+  };
+
+  // Limpiar todos los filtros
+  const clearAllFilters = () => {
+    setSearchFilters({});
+    setFilterModel({ items: [] });
+    setPage(1);
+  };
+
+  // Función para generar props de búsqueda en columnas
+  const getColumnSearchProps = (column) => {
+    if (column.filterable === false) return {};
+
+    return {
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 12, minWidth: 220 }}>
+          <Input
+            ref={searchInput}
+            placeholder={`Buscar ${column.headerName || column.field}`}
+            value={selectedKeys[0] || searchFilters[column.field] || ''}
+            onChange={(e) =>
+              setSelectedKeys(e.target.value ? [e.target.value] : [])
+            }
+            onPressEnter={() =>
+              handleSearch(column.field, selectedKeys[0], confirm)
+            }
+            style={{ marginBottom: 8, display: 'block', borderRadius: 6 }}
+            allowClear
+          />
+          <Space>
+            <Button
+              onClick={() =>
+                handleSearch(column.field, selectedKeys[0], confirm)
+              }
+              icon={<SearchOutlined />}
+              size="small"
+              style={{
+                width: 90,
+                background: 'linear-gradient(135deg, #1677ff 0%, #4096ff 100%)',
+                borderColor: '#1677ff',
+                color: '#ffffff',
+                borderRadius: 6,
+                fontWeight: 500,
+              }}
+            >
+              Buscar
+            </Button>
+            <Button
+              onClick={() => handleReset(column.field, clearFilters)}
+              size="small"
+              style={{ width: 90, borderRadius: 6 }}
+            >
+              Limpiar
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <SearchOutlined
+          style={{
+            color: searchFilters[column.field] ? '#1677ff' : undefined,
+            fontSize: 14,
+          }}
+        />
+      ),
+      onFilterDropdownOpenChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.current?.select(), 100);
+        }
+      },
+    };
+  };
+
   const tableColumns = columnList.map((column) => ({
     key: column.field,
     dataIndex: column.field,
@@ -168,43 +288,121 @@ const DataGridServer = ({
     align: column.align,
     width: column.width,
     sorter: !!column.sortable,
+    ...getColumnSearchProps(column),
     render: (value, record) =>
       column.renderCell
         ? column.renderCell({ row: record, value, id: record.id })
         : value,
   }));
 
+  // Verificar si hay filtros activos
+  const hasActiveFilters = Object.keys(searchFilters).length > 0;
+
+  // Mostrar los filtros activos como tags
+  const renderActiveFilters = () => {
+    if (!hasActiveFilters) return null;
+
+    const activeFiltersList = Object.entries(searchFilters).map(
+      ([field, value]) => {
+        const column = columnList.find((c) => c.field === field);
+        return {
+          field,
+          label: column?.headerName || field,
+          value,
+        };
+      },
+    );
+
+    return (
+      <div
+        style={{
+          marginBottom: 12,
+          padding: '8px 12px',
+          background: '#f0f5ff',
+          borderRadius: 8,
+          display: 'flex',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 8,
+        }}
+      >
+        <span style={{ color: '#1677ff', fontWeight: 500, marginRight: 4 }}>
+          <FilterOutlined /> Filtros activos:
+        </span>
+        {activeFiltersList.map((filter) => (
+          <span
+            key={filter.field}
+            style={{
+              background: '#ffffff',
+              border: '1px solid #1677ff',
+              borderRadius: 4,
+              padding: '2px 8px',
+              fontSize: 12,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+            }}
+          >
+            <strong>{filter.label}:</strong> {filter.value}
+            <CloseCircleOutlined
+              style={{ cursor: 'pointer', color: '#ff4d4f' }}
+              onClick={() => handleReset(filter.field)}
+            />
+          </span>
+        ))}
+        <Button
+          size="small"
+          onClick={clearAllFilters}
+          style={{
+            marginLeft: 'auto',
+            borderRadius: 4,
+            fontSize: 12,
+          }}
+          icon={<CloseCircleOutlined />}
+        >
+          Limpiar todos
+        </Button>
+      </div>
+    );
+  };
+
   return (
-    <Table
-      rowKey="id"
-      dataSource={data}
-      columns={tableColumns}
-      loading={loading}
-      pagination={{
-        current: page,
-        pageSize,
-        total: rowCount,
-        showSizeChanger: true,
-        pageSizeOptions: [10, 15, 20],
-        onChange: (nextPage, nextPageSize) => {
-          setPage(nextPage);
-          if (nextPageSize) setPageSize(nextPageSize);
-        },
-      }}
-      onChange={(pagination, _filters, sorter) => {
-        if (sorter?.field && sorter?.order) {
-          setSortModel([
-            {
-              field: sorter.field,
-              sort: sorter.order === 'ascend' ? 'asc' : 'desc',
-            },
-          ]);
-        } else {
-          setSortModel([]);
-        }
-      }}
-      size="middle"
-    />
+    <div style={{ width: '100%', overflowX: 'auto' }}>
+      {renderActiveFilters()}
+      <Table
+        rowKey="id"
+        dataSource={data}
+        columns={tableColumns}
+        loading={loading}
+        pagination={{
+          current: page,
+          pageSize,
+          total: rowCount,
+          showSizeChanger: true,
+          pageSizeOptions: [10, 15, 20],
+          onChange: (nextPage, nextPageSize) => {
+            setPage(nextPage);
+            if (nextPageSize) setPageSize(nextPageSize);
+          },
+        }}
+        onChange={(pagination, _filters, sorter) => {
+          if (sorter?.field && sorter?.order) {
+            setSortModel([
+              {
+                field: sorter.field,
+                sort: sorter.order === 'ascend' ? 'asc' : 'desc',
+              },
+            ]);
+          } else {
+            setSortModel([]);
+          }
+        }}
+        size="middle"
+        scroll={{ x: '100%' }}
+        style={{ width: '100%' }}
+        tableLayout="fixed"
+      />
+    </div>
   );
 };
 

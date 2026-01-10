@@ -23,23 +23,28 @@ const DataGrid = ({ rows, columns, loading }) => {
   const tableColumns = useMemo(() => mapColumns(columns), [columns]);
 
   return (
-    <Table
-      rowKey="id"
-      dataSource={rows}
-      columns={tableColumns}
-      loading={loading}
-      pagination={{
-        current: page,
-        pageSize,
-        pageSizeOptions: [10, 15, 20],
-        onChange: (nextPage, nextPageSize) => {
-          setPage(nextPage);
-          if (nextPageSize) setPageSize(nextPageSize);
-        },
-        showSizeChanger: true,
-      }}
-      size="middle"
-    />
+    <div style={{ width: '100%', overflowX: 'auto' }}>
+      <Table
+        rowKey="id"
+        dataSource={rows}
+        columns={tableColumns}
+        loading={loading}
+        pagination={{
+          current: page,
+          pageSize,
+          pageSizeOptions: [10, 15, 20],
+          onChange: (nextPage, nextPageSize) => {
+            setPage(nextPage);
+            if (nextPageSize) setPageSize(nextPageSize);
+          },
+          showSizeChanger: true,
+        }}
+        size="middle"
+        scroll={{ x: '100%' }}
+        style={{ width: '100%' }}
+        tableLayout="fixed"
+      />
+    </div>
   );
 };
 

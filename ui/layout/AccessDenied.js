@@ -15,11 +15,7 @@ const Container = styled.div`
 const AccessDenied = () => {
   return (
     <Container>
-      <Result
-        status="403"
-        title="403"
-        subTitle="Página no autorizada"
-      />
+      <Result status="403" title="403" subTitle="Página no autorizada" />
     </Container>
   );
 };

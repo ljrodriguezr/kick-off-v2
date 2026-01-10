@@ -33,7 +33,8 @@ const TextField = ({
     marginBottom: errors?.message ? 24 : 0,
   };
 
-  const InputComponent = type === 'password' ? Password : multiline ? TextArea : Input;
+  const InputComponent =
+    type === 'password' ? Password : multiline ? TextArea : Input;
 
   return (
     <div style={containerStyle}>

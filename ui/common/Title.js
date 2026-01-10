@@ -3,8 +3,12 @@ import { Row, Col, Typography } from 'antd';
 const { Title: AntTitle } = Typography;
 
 const Title = ({ children, title }) => {
-  const leftSpan = children ? { xs: 16, sm: 20, lg: 20 } : { xs: 24, sm: 24, lg: 24 };
-  const rightSpan = children ? { xs: 8, sm: 4, lg: 4 } : { xs: 0, sm: 0, lg: 0 };
+  const leftSpan = children
+    ? { xs: 16, sm: 20, lg: 20 }
+    : { xs: 24, sm: 24, lg: 24 };
+  const rightSpan = children
+    ? { xs: 8, sm: 4, lg: 4 }
+    : { xs: 0, sm: 0, lg: 0 };
 
   return (
     <Row gutter={[16, 16]} style={{ width: '100%' }}>
@@ -18,7 +22,11 @@ const Title = ({ children, title }) => {
           xs={rightSpan.xs}
           sm={rightSpan.sm}
           lg={rightSpan.lg}
-          style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+          }}
         >
           {children}
         </Col>

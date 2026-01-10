@@ -57,7 +57,10 @@ const Card = ({
             )}
             <Col flex="1">
               <div>
-                <Text strong style={{ textTransform: 'uppercase', fontSize: 14 }}>
+                <Text
+                  strong
+                  style={{ textTransform: 'uppercase', fontSize: 14 }}
+                >
                   {title}
                 </Text>
                 {description && (

@@ -38,9 +38,7 @@ const Autocomplete = ({
       defaultValue={selectedValue}
       optionFilterProp="label"
       onChange={(value) => {
-        const option = options.find(
-          (item) => getOptionValue(item) === value,
-        );
+        const option = options.find((item) => getOptionValue(item) === value);
         if (onChange) onChange(null, option || null);
       }}
       options={options.map((option) => ({

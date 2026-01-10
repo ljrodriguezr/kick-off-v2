@@ -158,11 +158,7 @@ const Select = ({
     );
 
     return (
-      <Tag
-        closable={closable}
-        onClose={onClose}
-        style={{ marginRight: 3 }}
-      >
+      <Tag closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
         {tagLabel}
       </Tag>
     );

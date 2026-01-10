@@ -71,11 +71,7 @@ const parsePerson = (data) => {
 /** Retorna un objeto con datos válidos para la tabla `user` */
 const parseUser = (data) => {
   return pickBy({
-    ...pick(data, [
-      'modifiedDate',
-      'email',
-      'accountTypeId',
-    ]),
+    ...pick(data, ['modifiedDate', 'email', 'accountTypeId']),
     username: data.email,
     roles: parseRoles(data.roles, { update: true }),
     modifiedDate: new Date(),

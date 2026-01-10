@@ -42,10 +42,34 @@ const UsersTable = ({ where }) => {
         <Avatar alt={cell.row?.Person?.name} src={cell.row?.Person?.photo} />
       );
     }),
-    { field: 'username', headerName: 'Usuario', flex: 1 },
-    { field: 'dni', headerName: 'Cédula/Pasaporte', flex: 0.5 },
-    { field: 'name', headerName: 'Nombres', flex: 1.5 },
-    { field: 'email', headerName: 'Email', flex: 1 },
+    {
+      field: 'username',
+      headerName: 'Usuario',
+      flex: 1,
+      sortable: true,
+      filterable: true,
+    },
+    {
+      field: 'dni',
+      headerName: 'Cédula/Pasaporte',
+      flex: 0.5,
+      sortable: true,
+      filterable: true,
+    },
+    {
+      field: 'name',
+      headerName: 'Nombres',
+      flex: 1.5,
+      sortable: true,
+      filterable: true,
+    },
+    {
+      field: 'email',
+      headerName: 'Email',
+      flex: 1,
+      sortable: true,
+      filterable: true,
+    },
     { field: 'id', headerName: 'Identificador', hide: true, flex: 0.3 },
     {
       field: 'Acciones',

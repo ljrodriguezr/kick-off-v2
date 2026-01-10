@@ -61,8 +61,9 @@ const DataList = ({
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    if (!start) return;
+    if (!start) return undefined;
     load();
+    return undefined;
   }, [load, start]);
 
   const load = useCallback(() => {
@@ -294,7 +295,9 @@ const DataList = ({
                 value={filterModel.columnField?.code}
                 disabled={loading}
                 onChange={(value) => {
-                  const selected = searchable.find((item) => item.code === value);
+                  const selected = searchable.find(
+                    (item) => item.code === value,
+                  );
                   const _operators = OPERATORS.filter((item) =>
                     item.types.includes(selected?.type),
                   );
@@ -374,13 +377,7 @@ const DataList = ({
               />
             </Grid>
           </Grid>
-          <Grid
-            item
-            container
-            xs={12}
-            spacing={1}
-            style={{ marginTop: 12 }}
-          >
+          <Grid item container xs={12} spacing={1} style={{ marginTop: 12 }}>
             <Grid item container xs={6}>
               <Button
                 variant="contained"

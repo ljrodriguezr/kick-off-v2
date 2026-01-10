@@ -1,4 +1,4 @@
-import Grid from '@ui/common/Grid';
+import { Row, Col } from 'antd';
 import Loading from '@ui/common/Loading';
 import Card from '@ui/common/Dashboard/Card';
 import { useSnackbar } from 'notistack';
@@ -24,20 +24,24 @@ const List = ({ menuCode }) => {
   if (loading) return <Loading />;
 
   return (
-    <Grid item container justifyContent="flex-start" xs={12}>
+    <Row gutter={[16, 16]}>
       {data.map((menu) => (
-        <Grid item key={menu.id} xs={12} sm={12} md={6} lg={4} xl={3}>
+        <Col key={menu.id} xs={24} sm={12} md={8} lg={8} xl={6}>
           <Card menu={menu} />
-        </Grid>
+        </Col>
       ))}
       {isEmpty(data) && (
-        <Grid item xs={12} style={{ marginTop: 15 }}>
-          <Alert type="info" showIcon>
-            Sin registros
-          </Alert>
-        </Grid>
+        <Col xs={24}>
+          <Alert
+            type="info"
+            showIcon
+            message="Sin registros"
+            description="No hay accesos rápidos disponibles en este momento"
+            style={{ borderRadius: 16 }}
+          />
+        </Col>
       )}
-    </Grid>
+    </Row>
   );
 };
 

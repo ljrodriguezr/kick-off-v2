@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { Row, Col, Typography } from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
@@ -18,7 +17,11 @@ const Wrap = styled.div`
   --shadow: 0 24px 60px rgba(17, 38, 75, 0.14);
 
   font-family: 'Manrope', 'DM Sans', sans-serif;
-  background: radial-gradient(900px 450px at 8% 12%, #d8e8ff 0%, transparent 60%),
+  background: radial-gradient(
+      900px 450px at 8% 12%,
+      #d8e8ff 0%,
+      transparent 60%
+    ),
     radial-gradient(700px 380px at 90% 10%, #e9f1ff 0%, transparent 55%),
     radial-gradient(600px 420px at 20% 80%, #d6e3f5 0%, transparent 50%),
     var(--bg);
@@ -193,12 +196,27 @@ const Signin = ({
         <Container>
           <LogoContainer>
             <LogoRow>
-              <Image
-                width={56}
-                height={56}
-                src={logo || '/assets/images/react.png'}
-                alt="kick-off-logo"
-              />
+              <div
+                style={{
+                  width: 56,
+                  height: 56,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <img
+                  src={logo || '/assets/images/react.png'}
+                  alt="kick-off-logo"
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                    width: 'auto',
+                    height: 'auto',
+                    objectFit: 'contain',
+                  }}
+                />
+              </div>
               <LogoBadge>Reservas</LogoBadge>
             </LogoRow>
             <BrandTitle level={1}>{brandName}</BrandTitle>
@@ -211,7 +229,9 @@ const Signin = ({
 
           <FormContainer>
             <FormTitle level={4}>Inicia sesion</FormTitle>
-            <FormSubtitle>Accede a tu cuenta para gestionar reservas.</FormSubtitle>
+            <FormSubtitle>
+              Accede a tu cuenta para gestionar reservas.
+            </FormSubtitle>
             <ChildrenContainer>{children}</ChildrenContainer>
 
             <LinksContainer>

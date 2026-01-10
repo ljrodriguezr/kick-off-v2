@@ -8,11 +8,7 @@ module.exports = {
   async rewrites() {
     return [];
   },
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback.fs = false;
-    }
-
-    return config;
-  },
+  // Turbopack configuration (Next.js 16+)
+  // Turbopack automatically handles fallbacks like fs, so no additional config needed
+  turbopack: {},
 };

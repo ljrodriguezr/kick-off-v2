@@ -2,8 +2,10 @@ import { Button as AntButton, Space } from 'antd';
 
 const mapType = (variant, color) => {
   if (variant === 'text') return 'text';
-  if (variant === 'outlined') return color === 'primary' ? 'default' : 'default';
-  if (variant === 'contained') return color === 'primary' ? 'primary' : 'default';
+  if (variant === 'outlined')
+    return color === 'primary' ? 'default' : 'default';
+  if (variant === 'contained')
+    return color === 'primary' ? 'primary' : 'default';
   return color === 'primary' ? 'primary' : 'default';
 };
 

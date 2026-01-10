@@ -3,17 +3,14 @@ const DrawerHeader = ({ children, ...props }) => {
     <div
       {...props}
       style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 2,
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         width: '100%',
-        height: 64,
-        borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
-        padding: '0 12px',
-        justifyContent: 'flex-end',
-        backgroundColor: 'var(--dashboard-header, #1f3b68)',
+        background: 'linear-gradient(180deg, #ffffff 0%, #fafbfc 100%)',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
+        position: 'relative',
         ...props.style,
       }}
     >

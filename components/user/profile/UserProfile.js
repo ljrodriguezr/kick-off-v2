@@ -14,6 +14,7 @@ import { authService } from '@services/auth.service';
 
 const UserProfile = (props) => {
   const profile = props.profile;
+  const compact = props.compact || false;
   const [openChange, setOpenChange] = useState(false);
   const [openRecover, setOpenRecover] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -28,7 +29,6 @@ const UserProfile = (props) => {
     if (!loading) {
       setLoading(true);
       try {
-        // TODO: Get user email from local storage
         const user = await authService.user();
         const response = await userService.recoverPasswordByEmail(user.email);
         handleOpenRecover();
@@ -43,6 +43,24 @@ const UserProfile = (props) => {
       }
     }
   };
+
+  if (compact) {
+    return (
+      <Space direction="vertical" size={12} style={{ width: '100%' }}>
+        <div style={{ textAlign: 'center' }}>
+          <UserProfileLogo person={profile.Person} />
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 16, fontWeight: 600, color: '#1f2937' }}>
+            {profile?.Person?.firstName} {profile?.Person?.lastName}
+          </div>
+          <div style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>
+            {profile?.email}
+          </div>
+        </div>
+      </Space>
+    );
+  }
 
   return (
     <>

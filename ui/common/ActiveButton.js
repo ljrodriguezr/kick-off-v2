@@ -6,10 +6,6 @@ import { snackbar } from '@lib/snackbar';
 import { useState } from 'react';
 import { useEffect } from 'react';
 
-const defineButtonType = (state) => {
-  return state ? 'primary' : 'default';
-};
-
 const defineLabel = (state) => {
   if (state) {
     if (isMobile) return null;
@@ -26,6 +22,44 @@ const defineIcon = (state) => {
   return <UndoOutlined />;
 };
 
+const getButtonStyle = (state) => {
+  if (state) {
+    return {
+      background: 'linear-gradient(135deg, #52c41a 0%, #73d13d 100%)',
+      borderColor: '#52c41a',
+      color: '#ffffff',
+      fontWeight: 500,
+      borderRadius: 6,
+      boxShadow: '0 2px 4px rgba(82, 196, 26, 0.3)',
+      transition: 'all 0.3s ease',
+    };
+  }
+  return {
+    background: 'linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%)',
+    borderColor: '#ff4d4f',
+    color: '#ffffff',
+    fontWeight: 500,
+    borderRadius: 6,
+    boxShadow: '0 2px 4px rgba(255, 77, 79, 0.3)',
+    transition: 'all 0.3s ease',
+  };
+};
+
+const getHoverStyle = (state) => {
+  if (state) {
+    return {
+      background: 'linear-gradient(135deg, #73d13d 0%, #95de64 100%)',
+      transform: 'translateY(-1px)',
+      boxShadow: '0 4px 8px rgba(82, 196, 26, 0.4)',
+    };
+  }
+  return {
+    background: 'linear-gradient(135deg, #ff7875 0%, #ffa39e 100%)',
+    transform: 'translateY(-1px)',
+    boxShadow: '0 4px 8px rgba(255, 77, 79, 0.4)',
+  };
+};
+
 const ActiveButton = ({
   rowId,
   active,
@@ -36,9 +70,9 @@ const ActiveButton = ({
 }) => {
   const [state, setState] = useState();
   const [loading, setLoading] = useState(false);
-  const [buttonType, setButtonType] = useState();
   const [label, setLabel] = useState();
   const [icon, setIcon] = useState();
+  const [buttonStyle, setButtonStyle] = useState({});
   const { enqueueSnackbar } = useSnackbar();
 
   const change = async () => {
@@ -65,7 +99,7 @@ const ActiveButton = ({
   }, [active]);
 
   useEffect(() => {
-    setButtonType(defineButtonType(state));
+    setButtonStyle(getButtonStyle(state));
     setLabel(defineLabel(state));
     setIcon(defineIcon(state));
   }, [state]);
@@ -75,7 +109,6 @@ const ActiveButton = ({
   return (
     <div style={{ width: isMobile ? 'auto' : 100 }}>
       <Button
-        type={buttonType}
         size="small"
         block={fullWidth}
         disabled={
@@ -85,6 +118,19 @@ const ActiveButton = ({
         onClick={change}
         icon={!loading ? icon : null}
         loading={loading}
+        style={buttonStyle}
+        onMouseEnter={(e) => {
+          const hoverStyle = getHoverStyle(state);
+          e.currentTarget.style.background = hoverStyle.background;
+          e.currentTarget.style.transform = hoverStyle.transform;
+          e.currentTarget.style.boxShadow = hoverStyle.boxShadow;
+        }}
+        onMouseLeave={(e) => {
+          const normalStyle = getButtonStyle(state);
+          e.currentTarget.style.background = normalStyle.background;
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = normalStyle.boxShadow;
+        }}
       >
         {label}
       </Button>

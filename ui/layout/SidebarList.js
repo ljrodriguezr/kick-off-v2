@@ -49,11 +49,7 @@ const MultiLevel = ({ item, handleOpen }) => {
   const { children: children } = item;
 
   return (
-    <SubMenu
-      key={item.id}
-      title={upper(item.name)}
-      style={{ paddingLeft: 0 }}
-    >
+    <SubMenu key={item.id} title={upper(item.name)}>
       {children.map((child, key) => (
         <MenuItem key={key} item={child} handleOpen={handleOpen} />
       ))}
@@ -61,22 +57,43 @@ const MultiLevel = ({ item, handleOpen }) => {
   );
 };
 
-const SectionTitle = ({ title }) => (
-  <div
-    style={{
-      padding: '14px 12px 6px',
-      color: '#7b8794',
-      fontSize: 12,
-      fontWeight: 600,
-      letterSpacing: 0.6,
-      textTransform: 'uppercase',
-    }}
-  >
-    <Text style={{ color: 'inherit' }}>{title}</Text>
-  </div>
-);
+const SectionTitle = ({ title, collapsed }) => {
+  if (collapsed) {
+    // Mostrar solo la primera letra cuando está colapsado
+    return (
+      <div
+        style={{
+          padding: '16px 0',
+          color: 'rgba(0, 0, 0, 0.45)',
+          fontSize: 14,
+          fontWeight: 700,
+          textAlign: 'center',
+          textTransform: 'uppercase',
+          letterSpacing: 0,
+        }}
+      >
+        {title?.charAt(0) || ''}
+      </div>
+    );
+  }
 
-const SidebarList = ({ handleOpen }) => {
+  return (
+    <div
+      style={{
+        padding: '16px 24px 8px',
+        color: 'rgba(0, 0, 0, 0.45)',
+        fontSize: 12,
+        fontWeight: 600,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+      }}
+    >
+      {title}
+    </div>
+  );
+};
+
+const SidebarList = ({ handleOpen, collapsed }) => {
   const [menus, setMenus] = useState([]);
   const [error, setError] = useState(false);
   const router = useRouter();
@@ -112,14 +129,18 @@ const SidebarList = ({ handleOpen }) => {
       mode="inline"
       selectedKeys={[selectedKey]}
       defaultOpenKeys={menus.map((item) => item.id?.toString())}
-      style={{ borderRight: 0, padding: '8px 10px' }}
+      style={{
+        borderRight: 0,
+        height: '100%',
+      }}
+      theme="light"
     >
       {menus.map((item, key) => {
         if (item.header) {
           return (
             <Menu.ItemGroup
               key={`group-${item.id}`}
-              title={<SectionTitle title={item.name} />}
+              title={<SectionTitle title={item.name} collapsed={collapsed} />}
             >
               {(item.children || []).map((child, idx) => (
                 <MenuItem

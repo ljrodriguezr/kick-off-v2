@@ -48,7 +48,11 @@ const Grid = ({
 
   if (container && item) {
     return (
-      <Col className={className} style={style} {...mapSizes({ xs, sm, md, lg, xl })}>
+      <Col
+        className={className}
+        style={style}
+        {...mapSizes({ xs, sm, md, lg, xl })}
+      >
         <Row
           gutter={gutter}
           justify={mapJustify(justifyContent)}
