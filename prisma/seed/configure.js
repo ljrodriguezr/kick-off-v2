@@ -140,8 +140,18 @@ const seedModules = async () => {
     installed: false,
     active: false,
   });
+  const courts = await seedModule({
+    code: 'courts',
+    name: 'Canchas Deportivas',
+    subname: 'Gestión de canchas deportivas',
+    description:
+      'Funcionalidades que permiten la gestión de canchas deportivas y sus horarios',
+    icon: '/assets/images/module/icons/courts.png',
+    installed: false,
+    active: false,
+  });
 
-  const modules = { base, audit };
+  const modules = { base, audit, courts };
   return modules;
 };
 

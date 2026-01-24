@@ -1,4 +1,3 @@
-import MenuData from '@database/base/menu';
 import ModuleData from '@database/base/module';
 import RoleData from '@database/base/role';
 import { upsert } from '@module/tools/upsert';
@@ -33,6 +32,12 @@ const pages = async (moduleId) => {
       code: 'courtSchedule',
       name: 'Horarios de Canchas',
       url: '/courts/schedule',
+      moduleId: moduleId,
+    },
+    {
+      code: 'courtsconfig',
+      name: 'Configuración Canchas Deportivas',
+      url: '/courts/configuration',
       moduleId: moduleId,
     },
   ];
@@ -91,3 +96,67 @@ const menus = async (moduleId, pages) => {
   const _menus = await upsert.menus(data);
   return { ...header, ...configuration, ..._menus };
 };
+
+const roles = async (moduleId) => {
+  const data = [
+    {
+      code: 'courtManager',
+      name: 'Gestor de Canchas Deportivas',
+      description: 'Gestionar canchas deportivas y sus horarios',
+      moduleId: moduleId,
+    },
+  ];
+  return await upsert.roles(data);
+};
+
+const parseRoleMenu = (roleId, menuId) => {
+  return { where: { roleId_menuId: { roleId, menuId } }, roleId, menuId };
+};
+
+const rolesOnMenus = async (_roles, _menus) => {
+  const roleData = new RoleData();
+  const data = [parseRoleMenu(_roles.courtManager.id, _menus.courtshead.id)];
+  const administratorRole = await roleData
+    .where({ code: 'administrator' })
+    .getUnique();
+  Object.entries(_menus).map(([_, menu]) => {
+    data.push(parseRoleMenu(administratorRole.id, menu.id));
+  });
+  await upsert.rolesOnMenus(data);
+};
+
+const access = async (_roles, _entities) => {
+  const roleData = new RoleData();
+  const administratorRole = await roleData
+    .where({ code: 'administrator' })
+    .getUnique();
+
+  Object.entries(_entities).map(([_, entity]) => {
+    data.push({
+      code: `adm${capitalize(entity.code)}`,
+      entityId: entity.id,
+      roleId: administratorRole.id,
+      read: true,
+      create: true,
+      write: true,
+      remove: true,
+    });
+  });
+  await upsert.access(data);
+};
+
+const installer = async (moduleId) => {
+  try {
+    const _entities = await entities();
+    const _pages = await pages(moduleId);
+    const _menus = await menus(moduleId, _pages);
+    const _roles = await roles(moduleId);
+    await rolesOnMenus(_roles, _menus);
+    await access(_roles, _entities);
+    console.log('Courts module installed successfully');
+  } catch (error) {
+    console.log('Error installing Courts module:', error);
+  }
+};
+
+export default installer;

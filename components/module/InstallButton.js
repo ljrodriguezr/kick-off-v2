@@ -34,13 +34,7 @@ const InstallButton = ({ module }) => {
 
   return (
     <div style={{ width: 120 }}>
-      <Button
-        size="small"
-        type="primary"
-        block
-        onClick={onSubmit}
-        disabled={loading}
-      >
+      <Button size="small" block onClick={onSubmit} disabled={loading}>
         {loading && <Spinner />}
         {label()}
       </Button>

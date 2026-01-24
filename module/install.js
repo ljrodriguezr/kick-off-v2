@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-assign-module-variable */
 import audit from '@module/installers/audit.install';
-import courts from '@module/installers/courts.install';
+import courts from '@module/installers/courts.install.js';
 
 const install = async (module) => {
   if (module.code === 'audit') await audit(module.id);

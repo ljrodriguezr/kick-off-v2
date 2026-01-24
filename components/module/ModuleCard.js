@@ -37,7 +37,7 @@ const ModuleCard = ({ url, module }) => {
           }}
         >
           <div style={{ width: 46, height: 46, position: 'relative' }}>
-            <Image src={module.icon} width={200} height={200} alt="Icon" />
+            <Image src={module.icon} width={60} height={60} alt="Icon" />
           </div>
         </Avatar>
         <div style={{ flex: 1 }}>
